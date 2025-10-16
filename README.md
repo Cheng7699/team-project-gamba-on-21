@@ -37,7 +37,7 @@ Please share if you have a more interesting api)
 
 # User Stories
 - As a User, I want to top up my funds after losing it all on black.
-- As a User, I want to start a game so I can put it all on back
+- As a User, I want to start a game so I can put it all on black
 
 #### TODO: (You reading this file) Add more user stories!!
 
