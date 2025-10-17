@@ -38,6 +38,7 @@ Please share if you have a more interesting api)
 # User Stories
 - As a User, I want to top up my funds after losing it all on black.
 - As a User, I want to start a game so I can put it all on black
+- As a User, I want a built-in self-limit system so I don't lose my life savings after putting it all on black
 
 #### TODO: (You reading this file) Add more user stories!!
 
