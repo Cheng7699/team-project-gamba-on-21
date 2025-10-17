@@ -54,4 +54,5 @@ Team Member Signatures:\
 Zihan Lu\
 Sean Ma\
 Diego Gao\
+Arindam Datta
 (type names here)
