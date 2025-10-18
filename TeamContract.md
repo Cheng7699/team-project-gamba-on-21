@@ -55,4 +55,5 @@ Zihan Lu\
 Sean Ma\
 Diego Gao\
 Arindam Datta\
+Norris Wang\
 (type names here)
