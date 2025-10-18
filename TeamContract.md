@@ -1,6 +1,5 @@
 # Team Contract
 
-This contract is subject to change currently.
 ### Purpose of this Contract
 
 This contract sets out shared expectations and commitments for how our team will collaborate during the course. It is designed to promote accountability, professionalism, and mutual support as we complete individual preparation, readiness assurance tests, in-class activities, and our course project.
