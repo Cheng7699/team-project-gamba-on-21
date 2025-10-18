@@ -57,4 +57,3 @@ Diego Gao\
 Arindam Datta\
 Norris Wang\
 Selim Affes
-(type names here)\
