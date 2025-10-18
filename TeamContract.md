@@ -18,7 +18,9 @@ from ASAP to 2 days max.
   * The project repo should be checked approx. every 2 days. If unable, try to keep checking at least 2 times a week.
 * Messages should be sent to the group chat if someone has something to announce or notify. (Examples: if they think they won't be able to meet a deadline, if they have to miss lecture, etc.)
 
-* Respectful and inclusive behaviour: Be adults and don't be a dick.
+
+* Respectful and inclusive behaviour:
+  * Respect everyone and their ideas, let people talk, give everyone a chance to participate, try to help anyone who feels stuck on a problem (and wants help)
 ---
 
 ### [Other Categories of norms and expectations go here]
@@ -55,4 +57,4 @@ Zihan Lu\
 Sean Ma\
 Diego Gao\
 Arindam Datta\
-(type names here)
+Selim Affes
