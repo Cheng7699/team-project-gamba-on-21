@@ -40,7 +40,7 @@ Please share if you have a more interesting api)
 - As a User, I want to start a game so I can put it all on black
 - As a User, I want a built-in self-limit system so I don't lose my life savings after putting it all on black
 - As a User, I want to be able to view odds so that I have an idea of what my chances of winning are
-- As a User, I want to enter a friend’s ID as a referral code when creating my account, so that both of us receive a $50 bonus.
+- As a user, I want to decide the bet amount before a game begins.
 
 #### TODO: (You reading this file) Add more user stories!!
 
