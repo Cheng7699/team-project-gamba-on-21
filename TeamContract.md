@@ -1,6 +1,5 @@
 # Team Contract
 
-This contract is subject to change currently.
 ### Purpose of this Contract
 
 This contract sets out shared expectations and commitments for how our team will collaborate during the course. It is designed to promote accountability, professionalism, and mutual support as we complete individual preparation, readiness assurance tests, in-class activities, and our course project.
@@ -26,7 +25,6 @@ from ASAP to 2 days max.
 ### [Other Categories of norms and expectations go here]
 
 * Based on your previous teamwork experiences, what other behaviours do you agree upon as a team?
-    - some examples of possible additional team norms and expectations are included in the sample team contract in case your team needs some help getting ideas for what else you want to include.
     - (To help with overall progress awareness) At the end of work sessions, individual or group, regardless of whether any code was pushed or commited, a message should be put in the Instagram group chat stating: file, intent, progress, plans. (e.g. Working on X ability of Y file(s), completed halfway but met roadblock Z, will continue working on this at T time)
 ---
 
@@ -57,4 +55,5 @@ Zihan Lu\
 Sean Ma\
 Diego Gao\
 Arindam Datta\
+Norris Wang\
 Selim Affes
