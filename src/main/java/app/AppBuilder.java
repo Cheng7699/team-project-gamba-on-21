@@ -1,5 +1,6 @@
 package app;
 
+import data_access.FileUserDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.AccountFactory;
 import interface_adapter.ViewManagerModel;
@@ -37,13 +38,18 @@ import java.awt.*;
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    final AccountFactory accountFactory = new AccountFactory();
+    final AccountFactory userFactory = new AccountFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
 
+    // DAO version using local file storage
+    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
+
+    // DAO version using a shared external database
+    // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
     // DAO version using in-memory storage
     final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
 
@@ -83,7 +89,7 @@ public class AppBuilder {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
-                userDataAccessObject, signupOutputBoundary, accountFactory);
+                userDataAccessObject, signupOutputBoundary, userFactory);
 
         SignupController controller = new SignupController(userSignupInteractor);
         signupView.setSignupController(controller);
@@ -106,7 +112,7 @@ public class AppBuilder {
                 loggedInViewModel);
 
         final ChangePasswordInputBoundary changePasswordInteractor =
-                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, accountFactory);
+                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
