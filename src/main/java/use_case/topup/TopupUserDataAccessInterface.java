@@ -12,4 +12,6 @@ public interface TopupUserDataAccessInterface {
      * @param user the user whose balance is to be updated
      */
    void topup(Accounts user);
+
+   Accounts get(String name);
 }
