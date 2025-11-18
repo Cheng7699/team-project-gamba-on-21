@@ -8,4 +8,6 @@ public class PlayerHitInputData {
     public PlayerHitInputData(BlackjackPlayer blackjackPlayer) {
         this.blackjackPlayer = blackjackPlayer;
     }
+
+    public BlackjackPlayer getBlackjackPlayer() { return blackjackPlayer; }
 }
