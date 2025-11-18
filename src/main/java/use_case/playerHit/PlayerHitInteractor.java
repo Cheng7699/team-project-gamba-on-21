@@ -4,7 +4,7 @@ import entity.BlackjackPlayer;
 import entity.Card;
 import entity.Hand;
 
-public class PlayerHitInteractor {
+public class PlayerHitInteractor implements PlayerHitInputBoundary{
 
     private final PlayerHitUserDataAccessInterface deck;
     private final PlayerHitOutputBoundary presenter;
@@ -14,6 +14,7 @@ public class PlayerHitInteractor {
         this.presenter = presenter;
     }
 
+    @Override
     public void execute(PlayerHitInputData inputData) {
         BlackjackPlayer player = inputData.getBlackjackPlayer();
         Hand currentHand = getCurrentHand(inputData);
@@ -25,7 +26,7 @@ public class PlayerHitInteractor {
         presenter.present(outputData);
     }
 
-    public Hand getCurrentHand(PlayerHitInputData inputData) {
+    private Hand getCurrentHand(PlayerHitInputData inputData) {
         BlackjackPlayer player = inputData.getBlackjackPlayer();
         if (inputData.isInSplittedHand()) {
             return player.getHands().get(1);
