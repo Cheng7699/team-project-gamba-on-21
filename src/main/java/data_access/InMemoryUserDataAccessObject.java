@@ -1,11 +1,10 @@
 package data_access;
 
 import entity.Accounts;
-import use_case.topup.TopupUserDataAccessInterface;
+import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
  */
 public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
                                                      LoginUserDataAccessInterface,
-                                                     TopupUserDataAccessInterface,
+                                                     ChangePasswordUserDataAccessInterface,
                                                      LogoutUserDataAccessInterface {
 
     private final Map<String, Accounts> users = new HashMap<>();
@@ -49,8 +48,8 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     }
 
     @Override
-    public void topup(Accounts user) {
-        // Replace the old entry with the new balance
+    public void changePassword(Accounts user) {
+        // Replace the old entry with the new password
         users.put(user.getUsername(), user);
     }
 
