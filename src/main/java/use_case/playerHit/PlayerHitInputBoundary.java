@@ -1,5 +1,5 @@
 package use_case.playerHit;
 
 public interface PlayerHitInputBoundary {
-    void hit(PlayerHitInputData inputData);
+    void execute(PlayerHitInputData inputData);
 }
