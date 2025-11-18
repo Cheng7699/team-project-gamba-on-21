@@ -1,8 +1,10 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
+import interface_adapter.signup.SignupViewModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -20,6 +22,8 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
     private final String viewName = "log in";
     private final LoginViewModel loginViewModel;
+    private final ViewManagerModel viewManagerModel;
+    private final SignupViewModel signupViewModel;
 
     private final JTextField usernameInputField = new JTextField(15);
     private final JLabel usernameErrorField = new JLabel();
@@ -30,10 +34,13 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
     private final JButton logIn;
     private final JButton cancel;
     private LoginController loginController = null;
+    private JDialog currentErrorDialog = null;
 
-    public LoginView(LoginViewModel loginViewModel) {
+    public LoginView(LoginViewModel loginViewModel, ViewManagerModel viewManagerModel, SignupViewModel signupViewModel) {
 
         this.loginViewModel = loginViewModel;
+        this.viewManagerModel = viewManagerModel;
+        this.signupViewModel = signupViewModel;
         this.loginViewModel.addPropertyChangeListener(this);
 
         final JLabel title = new JLabel("Login Screen");
@@ -129,7 +136,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
      * @param evt the ActionEvent to react to
      */
     public void actionPerformed(ActionEvent evt) {
-        System.out.println("Click " + evt.getActionCommand());
+        if (evt.getSource().equals(cancel)) {
+            // Switch to signup view
+            viewManagerModel.setState(signupViewModel.getViewName());
+            viewManagerModel.firePropertyChange();
+        }
     }
 
     @Override
@@ -137,6 +148,51 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         final LoginState state = (LoginState) evt.getNewValue();
         setFields(state);
         usernameErrorField.setText(state.getLoginError());
+
+        // login failed popup
+        if (state.getLoginError() != null && !state.getLoginError().isEmpty()) {
+            showErrorPopup(state.getLoginError());
+        }
+    }
+    
+    /**
+     * Shows an error popup with try again button.
+     * @param errorMessage the error message to display
+     */
+    private void showErrorPopup(String errorMessage) {
+        // Don't show multiple popups at once
+        if (currentErrorDialog != null && currentErrorDialog.isVisible()) {
+            return;
+        }
+        
+        JDialog errorDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Login Error", true);
+        currentErrorDialog = errorDialog;
+        errorDialog.setLayout(new BorderLayout());
+        errorDialog.setSize(300, 150);
+        errorDialog.setLocationRelativeTo(this);
+        
+        // error message
+        JLabel errorLabel = new JLabel("Incorrect Username / Password");
+        errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        errorLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        errorDialog.add(errorLabel, BorderLayout.CENTER);
+
+        // try again button
+        JButton tryAgainButton = new JButton("Try Again");
+        tryAgainButton.addActionListener(e -> {
+            errorDialog.dispose();
+            currentErrorDialog = null;
+            // Clear the error from state
+            LoginState currentState = loginViewModel.getState();
+            currentState.setLoginError(null);
+            loginViewModel.setState(currentState);
+        });
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(tryAgainButton);
+        errorDialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+        errorDialog.setVisible(true);
     }
 
     private void setFields(LoginState state) {
