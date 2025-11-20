@@ -1,6 +1,15 @@
 # Team Contract
 
-### Purpose of this Contract
+**Your team is free to revise this contract as your team wishes; we have scaffolded it with a recommended structure similar to the provided sample on Quercus.**
+
+After you reflect on past teamwork experiences and brainstorm a list of actions required for a positive teamwork experience, answer these questions. 
+
+Once you have all agreed on the contents of the team contract, make a PR to merge your team contract into the main branch of your team's repo on GitHub.
+
+**Please remember to remove any of the initial instruction text when your team finalizes your team contract; it should resemble the provided sample once complete, but with details specific to the expectations and norms agreed to by your entire team.**
+
+---
+## Purpose of this Contract
 
 This contract sets out shared expectations and commitments for how our team will collaborate during the course. It is designed to promote accountability, professionalism, and mutual support as we complete individual preparation, readiness assurance tests, in-class activities, and our course project.
 
@@ -9,51 +18,43 @@ This contract sets out shared expectations and commitments for how our team will
 
 ### Communication
 
-* We will use Instagram as our primary communication channel. 
-  * The project repo will be the secondary communications channel.
-* Messages should be responded to within 2 days, (for messages addressed to the group) reactions (with emojis) is equivalent to acknowledgement, should be
-from ASAP to 2 days max.
-  * Reactions rather than Instagram's Read function to avoid cases where someone leaves Instagram on in their browser and 'reading' an unread message. 
-  * The project repo should be checked approx. every 2 days. If unable, try to keep checking at least 2 times a week.
-* Messages should be sent to the group chat if someone has something to announce or notify. (Examples: if they think they won't be able to meet a deadline, if they have to miss lecture, etc.)
+* Which platform will you use for communication outside of class, when required for work on your course project? (Examples: Text message, Discord, WeChat, etc.)
 
+* Each teammate agrees to respond to messages in at most how long? 1 day? 2 days? Some other amount of time? 
 
-* Respectful and inclusive behaviour:
-  * Respect everyone and their ideas, let people talk, give everyone a chance to participate, try to help anyone who feels stuck on a problem (and wants help)
+* What things should a teammate notify you about? (Examples: if they think they won't be able to meet a deadline, if they have to miss lecture, etc.)
+
+* Respectful and inclusive behaviour are necessary for smooth and productive communication. What are some respectful and inclusive behaviours you expect when communicating with each other during lectures, labs, or outside of class? (Examples: Actively listening to each team members ideas, giving everyone a chance to meaningfully contribute, etc.)
+
 ---
 
 ### [Other Categories of norms and expectations go here]
 
 * Based on your previous teamwork experiences, what other behaviours do you agree upon as a team?
-    - (To help with overall progress awareness) At the end of work sessions, individual or group, regardless of whether any code was pushed or commited, a message should be put in the Instagram group chat stating: file, intent, progress, plans. (e.g. Working on X ability of Y file(s), completed halfway but met roadblock Z, will continue working on this at T time)
+    - some examples of possible additional team norms and expectations are included in the sample team contract in case your team needs some help getting ideas for what else you want to include.
+
 ---
 
 ## Decision Making
 
-* Decisions will be made via voting if there is an objection, if there is none then no vote is needed.
-  * If a person is outvoted on technical/design issue but remains convinced of their correctness, they can go to office hours and get an opinion from more knowledgeable persons. Upon which the issue will be rediscussed with the instructors' opinions.
+* How will decisions about your team project be made? (Examples: By majority vote, by unanimous vote, etc.)
+
 ---
 ## Conflict resolution
 
-* Talk it out or See above.
+* How will your team resolve conflicts? (Example: by listening to each other's side of the issue and attempting to reach a compromise. By consulting a TA or instructor as a team, if a resolution has not yet been reached.)
+
 ---
 
 ## Accountability
-* Communication is Key !!!!! Make noise if you have problems! Ask! Annoy the TAs or smth. DO NOT suffer quietly and then say hey I couldn't figure it out one day before the deadline. 
-* Each team member is responsible for completing their share of the work in a timely manner, seeking assistance from teammates/TAs/instructors when required, and also to speak up when they think someone else is making a mistake.
-* One should also request parts that they are more comfortable with over parts they don't know as well to improve effectivity and lower chances of bugs.
-* Checking Other's Code! PRs in this repo need to be checked and approved by at least 1 other person to be able to merge the PR! Notify the gc after you make a pull request.
-* PRs SHOULD BE CHECKED and responded to WITHIN ONE DAY!!
+
+* Reliability and accountability are also important aspects of teamwork. What are the responsibilities of each team member? (Example: completing their share of the work in a timely manner, seeking assistance from teammates/TAs/instructors when required, etc.)
+
 ---
 
 ---
 
 By signing below, we acknowledge that we have read, discussed, and agreed to these terms. We understand that this contract is binding for the duration of the course and may be revised with the agreement of all team members.
 
-Team Member Signatures:\
-Zihan Lu\
-Sean Ma\
-Diego Gao\
-Arindam Datta\
-Norris Wang\
-Selim Affes
+Team Member Signatures:
+Sean Ma
