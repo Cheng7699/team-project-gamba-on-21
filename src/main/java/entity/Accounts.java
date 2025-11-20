@@ -1,10 +1,14 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Accounts {
     private final String username;
     private final String password;
     private Integer balance;
     private final Integer selfLimits;
+    private List<BlackjackGame> games = new ArrayList<>();
 
     /**
      * selfLimits arbitrarily set to 1000 (Selflimit function Currently Unimplemented)
@@ -27,10 +31,13 @@ public class Accounts {
     public String getPassword() { return password; }
     public Integer getBalance() { return balance; }
     public Integer getSelfLimits() { return selfLimits; }
+    public List<BlackjackGame> getGames() { return games; }
 
     public void setBalance(Integer newBalance) { this.balance = newBalance; }
 
     public void addFunds(Integer amount) { this.balance += amount; }
 
     public void subtractFunds(Integer amount) { this.balance -= amount; }
+
+    public void addGame(BlackjackGame game) { this.games.add(game); }
 }
