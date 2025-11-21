@@ -5,6 +5,7 @@ import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.topup.TopupUserDataAccessInterface;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,12 @@ import java.util.Map;
 public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
                                                      LoginUserDataAccessInterface,
                                                      ChangePasswordUserDataAccessInterface,
-                                                     LogoutUserDataAccessInterface {
+                                                     LogoutUserDataAccessInterface, TopupUserDataAccessInterface {
 
     private final Map<String, Accounts> users = new HashMap<>();
+    // Log for balance?
+    //private final Map<String,List<Map<int,String>>>
+
 
     private String currentUsername;
 
@@ -48,8 +52,14 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     }
 
     @Override
+    public void topup(Accounts user) {
+        // Replace the old entry with the new balance
+        users.put(user.getUsername(), user);
+
+    }
+
+    @Override
     public void changePassword(Accounts user) {
-        // Replace the old entry with the new password
         users.put(user.getUsername(), user);
     }
 
