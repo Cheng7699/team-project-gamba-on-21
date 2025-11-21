@@ -1,13 +1,12 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.logout.LogoutController;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,88 +18,66 @@ import java.beans.PropertyChangeListener;
  */
 public class LoggedInView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private final String viewName = "logged in";
+    private final String viewName = LoggedInViewModel.VIEW_NAME;
     private final LoggedInViewModel loggedInViewModel;
-    private final JLabel passwordErrorField = new JLabel();
+    private final ViewManagerModel viewManagerModel;
     private ChangePasswordController changePasswordController = null;
     private LogoutController logoutController;
 
-    private final JLabel username;
+    private final JLabel welcomeLabel = new JLabel();
+    private final JLabel balanceLabel = new JLabel();
+    private final JLabel statusLabel = new JLabel();
 
-    private final JButton logOut;
+    private final JButton logOutButton = new JButton("Log Out");
+    private final JButton topUpButton = new JButton("Top Up");
+    private final JButton playButton = new JButton("Play");
+    private final JButton rulesButton = new JButton("Read Rules");
 
-    private final JTextField passwordInputField = new JTextField(15);
-    private final JButton changePassword;
-
-    public LoggedInView(LoggedInViewModel loggedInViewModel) {
+    public LoggedInView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
         this.loggedInViewModel = loggedInViewModel;
+        this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Logged In Screen");
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+
+        final JLabel title = new JLabel("Welcome to BlackJack");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
 
-        final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel("Password"), passwordInputField);
+        final JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        balanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        infoPanel.add(welcomeLabel);
+        infoPanel.add(Box.createVerticalStrut(4));
+        infoPanel.add(balanceLabel);
+        infoPanel.add(Box.createVerticalStrut(8));
+        infoPanel.add(statusLabel);
 
-        final JLabel usernameInfo = new JLabel("Currently logged in: ");
-        username = new JLabel();
+        final JPanel actionsPanel = new JPanel(new GridLayout(2, 2, 8, 8));
+        playButton.addActionListener(this);
+        rulesButton.addActionListener(this);
+        topUpButton.addActionListener(this);
+        logOutButton.addActionListener(this);
+        actionsPanel.add(playButton);
+        actionsPanel.add(rulesButton);
+        actionsPanel.add(topUpButton);
+        actionsPanel.add(logOutButton);
 
-        final JPanel buttons = new JPanel();
-        logOut = new JButton("Log Out");
-        buttons.add(logOut);
+        add(title);
+        add(Box.createVerticalStrut(12));
+        add(infoPanel);
+        add(Box.createVerticalStrut(12));
+        add(actionsPanel);
 
-        changePassword = new JButton("Change Password");
-        buttons.add(changePassword);
-
-        logOut.addActionListener(this);
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
-                final LoggedInState currentState = loggedInViewModel.getState();
-                currentState.setPassword(passwordInputField.getText());
-                loggedInViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-
-        changePassword.addActionListener(
-                // This creates an anonymous subclass of ActionListener and instantiates it.
-                evt -> {
-                    if (evt.getSource().equals(changePassword)) {
-                        final LoggedInState currentState = loggedInViewModel.getState();
-
-                        this.changePasswordController.execute(
-                                currentState.getUsername(),
-                                currentState.getPassword()
-                        );
-                    }
-                }
-        );
-
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(username);
-
-        this.add(passwordInfo);
-        this.add(passwordErrorField);
-        this.add(buttons);
+        final LoggedInState initialState = loggedInViewModel.getState();
+        if (initialState != null) {
+            welcomeLabel.setText("Logged in as: " + initialState.getUsername());
+            updateBalance(initialState);
+            statusLabel.setText(initialState.getStatusMessage());
+        }
     }
 
     /**
@@ -108,27 +85,51 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
      * @param evt the ActionEvent to react to
      */
     public void actionPerformed(ActionEvent evt) {
-        this.logoutController.execute();
-        System.out.println("Click " + evt.getActionCommand());
+        if (evt.getSource().equals(logOutButton)) {
+            if (logoutController != null) {
+                this.logoutController.execute();
+            }
+        }
+        else if (evt.getSource().equals(topUpButton)) {
+            navigateTo("top up");
+        }
+        else if (evt.getSource().equals(playButton)) {
+            navigateTo(BlackjackView.VIEW_NAME);
+        }
+        else if (evt.getSource().equals(rulesButton)) {
+            navigateTo("rules");
+        }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
-            username.setText(state.getUsername());
+            welcomeLabel.setText("Logged in as: " + state.getUsername());
+            updateBalance(state);
+            statusLabel.setText(state.getStatusMessage());
         }
-        else if (evt.getPropertyName().equals("password")) {
+        else if (evt.getPropertyName().equals("balance")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
-            if (state.getPasswordError() == null) {
-                JOptionPane.showMessageDialog(this, "password updated for " + state.getUsername());
-                passwordInputField.setText("");
-            }
-            else {
-                JOptionPane.showMessageDialog(this, state.getPasswordError());
-            }
+            updateBalance(state);
+        }
+        else if (evt.getPropertyName().equals("message")) {
+            final LoggedInState state = (LoggedInState) evt.getNewValue();
+            statusLabel.setText(state.getStatusMessage());
         }
 
+    }
+
+    private void updateBalance(LoggedInState state) {
+        if (state == null) {
+            return;
+        }
+        balanceLabel.setText("Current balance: $" + state.getBalance());
+    }
+
+    private void navigateTo(String viewName) {
+        viewManagerModel.setState(viewName);
+        viewManagerModel.firePropertyChange();
     }
 
     public String getViewName() {

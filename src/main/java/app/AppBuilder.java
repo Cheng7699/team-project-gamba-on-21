@@ -88,23 +88,23 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addTopUpView() {
-        topUpView = new TopUpView(loggedInViewModel, viewManagerModel);
-        cardPanel.add(topUpView, topUpView.getViewName());
-        return this;
-    }
-
+//    public AppBuilder addTopUpView() {
+//        topUpView = new TopUpView(loggedInViewModel, viewManagerModel);
+//        cardPanel.add(topUpView, topUpView.getViewName());
+//        return this;
+//    }
+//
     public AppBuilder addBlackjackView() {
         blackjackView = new BlackjackView(loggedInViewModel, viewManagerModel);
         cardPanel.add(blackjackView, blackjackView.getViewName());
         return this;
     }
 
-    public AppBuilder addRulesView() {
-        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
-        cardPanel.add(rulesView, rulesView.getViewName());
-        return this;
-    }
+//    public AppBuilder addRulesView() {
+//        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
+//        cardPanel.add(rulesView, rulesView.getViewName());
+//        return this;
+//    }
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
