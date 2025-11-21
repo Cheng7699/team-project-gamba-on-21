@@ -45,20 +45,20 @@ public class Hand {
         } else if (cards.get(0).isAce() && cards.get(1).isAce()) {
             return true;
         } else {
-            return cards.get(0).getNumber() == cards.get(1).getNumber();
+            return cards.get(0).getNumValue().equals(cards.get(1).getNumValue());
         }
     }
 
     /**
      * This method will calculate the best number which the hand can get.
      * If there are Aces in the hand, we default them as 11, and calculate total number.
-     * If total number is greater than 21, we set aces to 1, to make it as cloer to 21 as possible without exceeding it.
+     * If total number is greater than 21, we set aces to 1, to make it as closer to 21 as possible without exceeding it.
      */
     public void updateHandTotalNumber() {
         Integer result = 0;
         Integer aces = 0;
         for (Card card : this.cards) {
-            result += card.getNumber();
+            result += card.getNumValue();
             if (card.isAce()) { aces++; }
         }
         while (result > 21 && aces > 0) {
@@ -74,8 +74,8 @@ public class Hand {
      */
     public void updateAce() {
         for (Card card : this.cards) {
-            if (card.isAce() && card.getNumber() == 11) {
-                card.setNumber(1);
+            if (card.isAce() && card.getNumValue() == 11) {
+                card.setNumValue(1);
             }
         }
     }

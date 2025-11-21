@@ -8,24 +8,25 @@ package entity;
 public class Card {
     private final String code;
     private final String imageUrl;
-    private String value;
-    private Integer number;
+    private final String value;
     private final String suit;
+    private Integer numValue;
 
-    public Card(String code, String imageUrl, String value, Integer number, String suit) {
+    public Card(String code, String imageUrl, String value, String suit) {
         this.code = code;
         this.imageUrl = imageUrl;
         this.value = value;
-        this.number = number;
         this.suit = suit;
+        if (value.equals("JACK") || value.equals("QUEEN") || value.equals("KING")) { this.numValue = 10; }
+        else if (value.equals("ACE")) { this.numValue = 11; }
+        else { this.numValue = Integer.parseInt(value); }
     }
 
     public String getCode() { return code; }
     public String getImageUrl() { return imageUrl; }
     public String getValue() { return value; }
-    public Integer getNumber() { return number; }
     public String getSuit() { return suit; }
-    public boolean isAce() { return value.equals("ACE"); }
-
-    public void setNumber(Integer number) { this.number = number; }
+    public boolean isAce() { return code.charAt(0) == 'A'; }
+    public void setNumValue(Integer numValue) { this.numValue = numValue; }
+    public Integer getNumValue() { return numValue;}
 }
