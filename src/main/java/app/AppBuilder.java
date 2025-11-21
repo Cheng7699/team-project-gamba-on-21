@@ -49,7 +49,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     private SignupView signupView;
-    private SignupViewModel signupViewModel;
+    private SignupViewModel signupViewModel = new SignupViewModel();
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
@@ -60,7 +60,6 @@ public class AppBuilder {
     }
 
     public AppBuilder addSignupView() {
-        signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
         cardPanel.add(signupView, signupView.getViewName());
         return this;
@@ -68,7 +67,7 @@ public class AppBuilder {
 
     public AppBuilder addLoginView() {
         loginViewModel = new LoginViewModel();
-        loginView = new LoginView(loginViewModel);
+        loginView = new LoginView(loginViewModel, viewManagerModel, signupViewModel);
         cardPanel.add(loginView, loginView.getViewName());
         return this;
     }

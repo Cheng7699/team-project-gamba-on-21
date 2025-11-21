@@ -1,18 +1,29 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Accounts {
     private final String username;
     private final String password;
     private Integer balance;
     private final Integer selfLimits;
+    private List<BlackjackGame> games = new ArrayList<>();
 
     /**
-     * I arbitrarily set selfLimits to 1000 because we hadn't decided the number.
+     * selfLimits arbitrarily set to 1000 (Selflimit function Currently Unimplemented)
+     * balance arbitrarily set to 1000 chips on new account creation
      */
     public Accounts(String username, String password) {
         this.username = username;
         this.password = password;
-        this.balance = 0;
+        this.balance = 1000;
+        this.selfLimits = 1000;
+    }
+    public Accounts(String username, String password, Integer balance) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
         this.selfLimits = 1000;
     }
 
@@ -20,10 +31,13 @@ public class Accounts {
     public String getPassword() { return password; }
     public Integer getBalance() { return balance; }
     public Integer getSelfLimits() { return selfLimits; }
+    public List<BlackjackGame> getGames() { return games; }
 
     public void setBalance(Integer newBalance) { this.balance = newBalance; }
 
     public void addFunds(Integer amount) { this.balance += amount; }
 
     public void subtractFunds(Integer amount) { this.balance -= amount; }
+
+    public void addGame(BlackjackGame game) { this.games.add(game); }
 }
