@@ -18,7 +18,7 @@ import java.util.StringJoiner;
 
 /**
  * The Blackjack game view. It provides controls for the key player actions and
- * displays the user's balance and current bet.
+ * displays the user's balance and current bet
  */
 public class BlackjackView extends JPanel implements ActionListener, PropertyChangeListener {
 
