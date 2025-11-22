@@ -47,11 +47,10 @@ public class AppBuilder {
 
     // DAO version using local file storage
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
-
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
     // DAO version using in-memory storage
-    final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    //final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel = new SignupViewModel();
