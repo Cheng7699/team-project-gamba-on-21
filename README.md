@@ -29,18 +29,28 @@ B can see A's wins or losses to the team balance and A can leave messages to B w
   - These should all be saved locally to JSON and read when users log in.
 
 ## Key Points
-- [ ] API usage: [Deck of Cards](https://deckofcardsapi.com/) (Found on course Quercus. 
-Please share if you have a more interesting api)
+- [ ] API usage: [Deck of Cards](https://deckofcardsapi.com/)
 - [ ] Saving to JSON
 - [ ] GUI interactions
 - [ ] Handling Games
 
 # User Stories
-- As a User, I want to top up my funds after losing it all on black.
-- As a User, I want to start a game so I can put it all on black
-- As a User, I want self-limits on token spend so I don't lose my life savings after putting it all on black
+## Core:
+- As a User, I want to Create an account.
+- As a user, I want to log in.
+- As a User, I want to top up my funds before losing it all.
+- As a User, I want to start a game so I can put it all on 21.
+  - As a user, I want to decide the bet amount before a game begins.
+  - Hit / Stand / Split / Double down
+- As a User, I want to be able to view odds so that I have an idea of what my chances of winning are
 
-#### TODO: (You reading this file) Add more user stories!!
+
+### Secondary:
+- As a User, I want a built-in self-limit system so I don't lose my life savings after putting it all on black
+
+
+# Use Cases:
+To be copy-pasta from the word doc
 
 # Keep this up-to-date with information about the project
 
