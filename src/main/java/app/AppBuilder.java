@@ -1,7 +1,6 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
 import entity.AccountFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
@@ -27,9 +26,12 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import view.BlackjackView;
 import view.LoggedInView;
 import view.LoginView;
+import view.RulesView;
 import view.SignupView;
+import view.TopUpView;
 import view.ViewManager;
 
 import javax.swing.*;
@@ -47,10 +49,9 @@ public class AppBuilder {
 
     // DAO version using local file storage
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
+
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
-    // DAO version using in-memory storage
-    //final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel = new SignupViewModel();
@@ -58,6 +59,9 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private TopUpView topUpView;
+    private BlackjackView blackjackView;
+    private RulesView rulesView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -78,10 +82,28 @@ public class AppBuilder {
 
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel);
+        loggedInView = new LoggedInView(loggedInViewModel, viewManagerModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
     }
+
+//    public AppBuilder addTopUpView() {
+//        topUpView = new TopUpView(loggedInViewModel, viewManagerModel);
+//        cardPanel.add(topUpView, topUpView.getViewName());
+//        return this;
+//    }
+//
+    public AppBuilder addBlackjackView() {
+        blackjackView = new BlackjackView(loggedInViewModel, viewManagerModel);
+        cardPanel.add(blackjackView, blackjackView.getViewName());
+        return this;
+    }
+
+//    public AppBuilder addRulesView() {
+//        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
+//        cardPanel.add(rulesView, rulesView.getViewName());
+//        return this;
+//    }
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,

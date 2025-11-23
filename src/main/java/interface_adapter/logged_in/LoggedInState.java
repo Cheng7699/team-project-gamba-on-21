@@ -9,10 +9,17 @@ public class LoggedInState {
     private String password = "";
     private String passwordError;
 
+    private int balance;
+    private int selfLimit;
+    private String statusMessage = "";
+
     public LoggedInState(LoggedInState copy) {
         username = copy.username;
         password = copy.password;
         passwordError = copy.passwordError;
+        balance = copy.balance;
+        selfLimit = copy.selfLimit;
+        statusMessage = copy.statusMessage;
     }
 
     // Because of the previous copy constructor, the default constructor must be explicit.
@@ -42,5 +49,29 @@ public class LoggedInState {
 
     public String getPasswordError() {
         return passwordError;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    public int getSelfLimit() {
+        return selfLimit;
+    }
+
+    public void setSelfLimit(int selfLimit) {
+        this.selfLimit = selfLimit;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 }
