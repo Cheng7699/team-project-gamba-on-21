@@ -1,7 +1,6 @@
 package interface_adapter.launch;
 
 import use_case.launch.LaunchInputBoundary;
-import use_case.launch.LaunchInputData;
 
 public class LaunchController {
 
