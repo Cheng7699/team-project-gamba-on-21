@@ -1,6 +1,5 @@
 package interface_adapter.playerHit;
 
-import entity.BlackjackGame;
 import entity.Hand;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitOutputData;
@@ -23,6 +22,6 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
 
         view.setHands(playerHand, dealerHand, isHideFirstCard);
 
-        if (playerHand.isBust()) { view.showRoundResult("Player Busted!"); }
+        if (playerHand.isBust()) { view.showRoundResult("You Busted!"); }
     }
 }
