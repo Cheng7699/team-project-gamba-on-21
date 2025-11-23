@@ -12,11 +12,11 @@ public class LaunchController {
     }
 
     public void SwitchToSignUp() {
-        launchUseCaseInteractor.switchToSignUp();
+        launchUseCaseInteractor.switchToSignUpView();
     }
 
     public void SwitchToLogIn() {
-        launchUseCaseInteractor.switchToLogIn();
+        launchUseCaseInteractor.switchToLogInView();
     }
 
 }

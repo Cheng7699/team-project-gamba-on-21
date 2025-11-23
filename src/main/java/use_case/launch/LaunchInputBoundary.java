@@ -5,6 +5,7 @@ package use_case.launch;
  */
 public interface LaunchInputBoundary {
 
-        void switchToSignUp();
-        void switchToLogIn();
+        void switchToSignUpView();
+
+        void switchToLogInView();
 }
