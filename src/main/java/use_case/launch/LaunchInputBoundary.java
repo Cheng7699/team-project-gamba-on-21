@@ -9,5 +9,5 @@ public interface LaunchInputBoundary {
          * Executes the launch (screen) use case.
          *
          */
-        void execute();
+        void execute(LaunchInputData launchInputData);
 }
