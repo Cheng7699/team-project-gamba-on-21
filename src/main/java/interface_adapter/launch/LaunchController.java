@@ -11,9 +11,12 @@ public class LaunchController {
         this.launchUseCaseInteractor = launchUseCaseInteractor;
     }
 
-    public void execute(String destinationPage) {
-        final LaunchInputData launchInputData = new LaunchInputData(destinationPage);
-        launchUseCaseInteractor.execute(launchInputData);
+    public void SwitchToSignUp() {
+        launchUseCaseInteractor.switchToSignUp();
+    }
+
+    public void SwitchToLogIn() {
+        launchUseCaseInteractor.switchToLogIn();
     }
 
 }
