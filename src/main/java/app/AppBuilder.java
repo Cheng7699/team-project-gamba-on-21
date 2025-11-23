@@ -1,9 +1,10 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
 import entity.AccountFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.launch.LaunchController;
+import interface_adapter.launch.LaunchPresenter;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -31,6 +32,7 @@ import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
 import view.ViewManager;
+import view.LaunchView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,17 +55,26 @@ public class AppBuilder {
     //final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
 
     private SignupView signupView;
-    private SignupViewModel signupViewModel = new SignupViewModel();
-    private LoginViewModel loginViewModel;
-    private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private LaunchView launchView;
+    private SignupViewModel signupViewModel;
+    private LoginViewModel loginViewModel;
+    private LoggedInViewModel loggedInViewModel;
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
     }
 
+    public AppBuilder addLaunchView() {
+        launchView = new LaunchView();
+        cardPanel.add(launchView, launchView.getViewName());
+        return this;
+    }
+
     public AppBuilder addSignupView() {
+        signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
         cardPanel.add(signupView, signupView.getViewName());
         return this;
@@ -134,12 +145,12 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("User Login Example");
+        final JFrame application = new JFrame("GAMBLIN' TIME");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
 
-        viewManagerModel.setState(signupView.getViewName());
+        viewManagerModel.setState(launchView.getViewName());
         viewManagerModel.firePropertyChange();
 
         return application;
