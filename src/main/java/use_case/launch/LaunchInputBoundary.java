@@ -5,9 +5,6 @@ package use_case.launch;
  */
 public interface LaunchInputBoundary {
 
-        /**
-         * Executes the launch (screen) use case.
-         *
-         */
-        void execute(LaunchInputData launchInputData);
+        void switchToSignUp();
+        void switchToLogIn();
 }
