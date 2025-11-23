@@ -7,5 +7,5 @@ public interface LaunchInputBoundary {
 
         void switchToSignUpView();
 
-        void switchToLogInView();
+        void switchToLoginView();
 }

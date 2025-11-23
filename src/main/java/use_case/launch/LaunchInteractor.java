@@ -3,13 +3,13 @@ package use_case.launch;
 import use_case.login.LoginOutputBoundary;
 
 public class LaunchInteractor implements LaunchInputBoundary{
-    private final LoginOutputBoundary launchPresenter;
+    private final LaunchOutputBoundary launchPresenter;
 
-    public LaunchInteractor(LoginOutputBoundary launchPresenter){ this.launchPresenter = launchPresenter;}
-
-    @Override
-    public void switchToLogInView() { launchPresenter.switchToLogin(); }
+    public LaunchInteractor(LaunchOutputBoundary launchPresenter){ this.launchPresenter = launchPresenter;}
 
     @Override
-    public void switchToSignUpView() { launchPresenter.switchToSignUp(); }
+    public void switchToLoginView() { launchPresenter.switchToLoginView(); }
+
+    @Override
+    public void switchToSignUpView() { launchPresenter.switchToSignUpView(); }
 }
