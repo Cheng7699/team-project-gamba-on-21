@@ -98,8 +98,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             }
         });
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
@@ -124,11 +122,24 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             }
         });
 
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(usernameErrorField);
-        this.add(passwordInfo);
-        this.add(buttons);
+        // Create a container panel with BoxLayout for the content
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.add(title);
+        contentPanel.add(usernameInfo);
+        contentPanel.add(usernameErrorField);
+        contentPanel.add(passwordInfo);
+        contentPanel.add(buttons);
+        
+        // Use GridBagLayout to center the content
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        this.add(contentPanel, gbc);
     }
 
     /**
@@ -137,8 +148,8 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
      */
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource().equals(cancel)) {
-            // Switch to signup view
-            viewManagerModel.setState(signupViewModel.getViewName());
+            // switch back to launch view
+            viewManagerModel.setState("launch");
             viewManagerModel.firePropertyChange();
         }
     }
