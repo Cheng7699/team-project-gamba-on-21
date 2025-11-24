@@ -24,10 +24,20 @@ public class TopupInteractor implements TopupInputBoundary {
     @Override
     public void execute(TopupInputData topupInputData) {
         try {
-            int topupAmount = Integer.parseInt(topupInputData.getTopupAmount());
-//            final Accounts user = accountFactory.create();       //TODO: add userfactory functions!
+            int topUpAmount = Integer.parseInt(topupInputData.getTopupAmount());
+            final Accounts user = topupUserDataAccess.get(topupInputData.getUsername());
+            if (user == null) {
+                userpresenter.prepareFailureView("User not found.");
+                return;
+            }
+            user.addFunds(topUpAmount);
+            topupUserDataAccess.topup(user);
+            
+            final TopupOutputData topupOutputData = new TopupOutputData(user.getUsername());
+            userpresenter.prepareSuccessView(topupOutputData);
         }
-        catch(NumberFormatException e)
-        {userpresenter.prepareFailureView("Please enter an integer");}
+        catch(NumberFormatException e) {
+            userpresenter.prepareFailureView("Please enter an integer");
+        }
     }
 }

@@ -14,10 +14,12 @@ public class Main {
 //                .addTopUpView()
                 .addBlackjackView()
 //                .addRulesView()
+                .addLaunchUseCase()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
+                .addPlayerHitUseCase()
                 .build();
 
         application.pack();

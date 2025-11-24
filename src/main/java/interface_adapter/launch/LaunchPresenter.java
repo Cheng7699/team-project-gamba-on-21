@@ -5,7 +5,6 @@ import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupViewModel;
 import use_case.launch.LaunchOutputBoundary;
-import view.LaunchView;
 
 public class LaunchPresenter implements LaunchOutputBoundary {
     private final ViewManagerModel viewManagerModel;

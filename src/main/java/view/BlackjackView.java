@@ -319,6 +319,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         updateHandLabels(hideDealerHoleCard);
     }
 
+    public Hand getDealerHand() { return dealerHand; }
+    public boolean isHideDealerHoleCard() { return hideDealerHoleCard; }
+
     /**
      * Update the UI to reflect the end-of-round state after entity logic completes.
      * @param message status to display to the user
