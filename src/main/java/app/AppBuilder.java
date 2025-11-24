@@ -7,6 +7,7 @@ import entity.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.launch.LaunchController;
 import interface_adapter.launch.LaunchPresenter;
+import interface_adapter.launch.LaunchViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -24,6 +25,7 @@ import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.launch.LaunchInputBoundary;
+import use_case.launch.LaunchInteractor;
 import use_case.launch.LaunchOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
@@ -73,6 +75,7 @@ public class AppBuilder {
     private SignupViewModel signupViewModel;
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
+    private LaunchViewModel launchViewModel;
 
     private TopUpView topUpView;
     private BlackjackView blackjackView;
@@ -86,7 +89,8 @@ public class AppBuilder {
     }
 
     public AppBuilder addLaunchView() {
-        launchView = new LaunchView();
+        launchViewModel = new LaunchViewModel();
+        launchView = new LaunchView(launchViewModel, viewManagerModel, signupViewModel, loginViewModel);
         cardPanel.add(launchView, launchView.getViewName());
         return this;
     }
@@ -149,6 +153,16 @@ public class AppBuilder {
 
         LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        return this;
+    }
+
+    public AppBuilder addLaunchUseCase() {
+        final LaunchOutputBoundary launchOutputBoundary = new LaunchPresenter(viewManagerModel,
+                loginViewModel, signupViewModel, launchViewModel);
+        final LaunchInputBoundary launchInteractor = new LaunchInteractor(launchOutputBoundary);
+
+        LaunchController launchController = new LaunchController(launchInteractor);
+        launchView.setLaunchController(launchController);
         return this;
     }
 
