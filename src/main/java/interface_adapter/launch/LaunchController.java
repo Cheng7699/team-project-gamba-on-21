@@ -10,11 +10,12 @@ public class LaunchController {
         this.launchUseCaseInteractor = launchUseCaseInteractor;
     }
 
-    public void SwitchToSignUp() {
+    public void switchToSignUp() {
         launchUseCaseInteractor.switchToSignUpView();
     }
 
-    public void SwitchToLogin() {
+    public void switchToLogin() {
+
         launchUseCaseInteractor.switchToLoginView();
     }
 
