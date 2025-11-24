@@ -15,7 +15,7 @@ import java.io.IOException;
  Reminder: The card draw/deck is a deck; The player/dealer hands are piles
  Also, the piles are part of the deck itself!!
  */
-public class DeckApiClient implements DeckInteraction {
+public class DeckApiClient {
 
     private final OkHttpClient client = new OkHttpClient();
     private static final String API_URL = "https://deckofcardsapi.com/api/";
