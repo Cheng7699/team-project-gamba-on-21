@@ -5,6 +5,8 @@ import data_access.DeckApiClient;
 import data_access.PlayerHitDataAccess;
 import entity.*;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.launch.LaunchController;
+import interface_adapter.launch.LaunchPresenter;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -21,6 +23,8 @@ import interface_adapter.signup.SignupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.launch.LaunchInputBoundary;
+import use_case.launch.LaunchOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -41,6 +45,7 @@ import view.RulesView;
 import view.SignupView;
 import view.TopUpView;
 import view.ViewManager;
+import view.LaunchView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,11 +67,13 @@ public class AppBuilder {
     // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
 
     private SignupView signupView;
-    private SignupViewModel signupViewModel = new SignupViewModel();
-    private LoginViewModel loginViewModel;
-    private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private LaunchView launchView;
+    private SignupViewModel signupViewModel;
+    private LoginViewModel loginViewModel;
+    private LoggedInViewModel loggedInViewModel;
+
     private TopUpView topUpView;
     private BlackjackView blackjackView;
     private RulesView rulesView;
@@ -78,8 +85,15 @@ public class AppBuilder {
         cardPanel.setLayout(cardLayout);
     }
 
+    public AppBuilder addLaunchView() {
+        launchView = new LaunchView();
+        cardPanel.add(launchView, launchView.getViewName());
+        return this;
+    }
+
     public AppBuilder addSignupView() {
-        signupView = new SignupView(signupViewModel);
+        signupViewModel = new SignupViewModel();
+        signupView = new SignupView(signupViewModel, viewManagerModel);
         cardPanel.add(signupView, signupView.getViewName());
         return this;
     }
@@ -179,16 +193,29 @@ public class AppBuilder {
         blackjackView.setHitActionListener(e -> {
             controller.hit(blackjackGame.getPlayer(), false);});
 
+    /**
+     * Adds the Launch Use Case to the application.
+     * @return this builder
+     */
+    public AppBuilder addLaunchUseCase() {
+        final LaunchOutputBoundary launchOutputBoundary = new LaunchPresenter(viewManagerModel,
+                loginViewModel, signupViewModel);
+
+        final LaunchInputBoundary launchInteractor =
+                new use_case.launch.LaunchInteractor(launchOutputBoundary);
+
+        final LaunchController launchController = new LaunchController(launchInteractor);
+        launchView.setLaunchController(launchController);
         return this;
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("User Login Example");
+        final JFrame application = new JFrame("GAMBLIN' TIME");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
 
-        viewManagerModel.setState(signupView.getViewName());
+        viewManagerModel.setState(launchView.getViewName());
         viewManagerModel.firePropertyChange();
 
         return application;
