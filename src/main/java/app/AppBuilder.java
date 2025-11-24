@@ -19,6 +19,8 @@ import interface_adapter.signup.SignupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.launch.LaunchInputBoundary;
+import use_case.launch.LaunchOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -80,7 +82,7 @@ public class AppBuilder {
 
     public AppBuilder addSignupView() {
         signupViewModel = new SignupViewModel();
-        signupView = new SignupView(signupViewModel);
+        signupView = new SignupView(signupViewModel, viewManagerModel);
         cardPanel.add(signupView, signupView.getViewName());
         return this;
     }
@@ -164,6 +166,22 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
+        return this;
+    }
+
+    /**
+     * Adds the Launch Use Case to the application.
+     * @return this builder
+     */
+    public AppBuilder addLaunchUseCase() {
+        final LaunchOutputBoundary launchOutputBoundary = new LaunchPresenter(viewManagerModel,
+                loginViewModel, signupViewModel);
+
+        final LaunchInputBoundary launchInteractor =
+                new use_case.launch.LaunchInteractor(launchOutputBoundary);
+
+        final LaunchController launchController = new LaunchController(launchInteractor);
+        launchView.setLaunchController(launchController);
         return this;
     }
 

@@ -13,6 +13,7 @@ public class Main {
 //                .addTopUpView()
                 .addBlackjackView()
 //                .addRulesView()
+                .addLaunchUseCase()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addChangePasswordUseCase()

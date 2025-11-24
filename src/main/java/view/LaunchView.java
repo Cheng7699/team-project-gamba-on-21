@@ -173,7 +173,14 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        JOptionPane.showMessageDialog(this, "Cancel not implemented yet.");
+        if (launchController == null) {
+            return;
+        }
+        if (evt.getSource() == toLoginButton) {
+            launchController.SwitchToLogIn();
+        } else if (evt.getSource() == toSignUpButton) {
+            launchController.SwitchToSignUp();
+        }
     }
 
 @Override
