@@ -1,7 +1,9 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
-import entity.AccountFactory;
+import data_access.DeckApiClient;
+import data_access.PlayerHitDataAccess;
+import entity.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -11,6 +13,8 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.playerHit.PlayerHitController;
+import interface_adapter.playerHit.PlayerHitPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -23,6 +27,10 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.playerHit.PlayerHitInputBoundary;
+import use_case.playerHit.PlayerHitInteractor;
+import use_case.playerHit.PlayerHitOutputBoundary;
+import use_case.playerHit.PlayerHitUserDataAccessInterface;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -62,6 +70,9 @@ public class AppBuilder {
     private TopUpView topUpView;
     private BlackjackView blackjackView;
     private RulesView rulesView;
+
+    private BlackjackGame blackjackGame;
+    private DeckApiClient deckApiClient = new DeckApiClient();
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -152,6 +163,22 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
+        return this;
+    }
+
+    public AppBuilder addPlayerHitUseCase() {
+
+        PlayerHitUserDataAccessInterface deckAccess = new PlayerHitDataAccess(deckApiClient, blackjackGame);
+
+        PlayerHitOutputBoundary presenter = new PlayerHitPresenter(blackjackView);
+
+        PlayerHitInputBoundary interactor = new PlayerHitInteractor(deckAccess, presenter);
+
+        PlayerHitController controller = new PlayerHitController(interactor);
+
+        blackjackView.setHitActionListener(e -> {
+            controller.hit(blackjackGame.getPlayer(), false);});
+
         return this;
     }
 

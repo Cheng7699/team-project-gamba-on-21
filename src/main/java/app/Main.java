@@ -16,6 +16,7 @@ public class Main {
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
+                .addPlayerHitUseCase()
                 .build();
 
         application.pack();
