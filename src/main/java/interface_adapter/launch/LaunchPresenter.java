@@ -4,7 +4,6 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupViewModel;
 import use_case.launch.LaunchOutputBoundary;
-import view.LaunchView;
 
 public class LaunchPresenter implements LaunchOutputBoundary {
     private final ViewManagerModel viewManagerModel;
@@ -24,7 +23,7 @@ public class LaunchPresenter implements LaunchOutputBoundary {
         viewManagerModel.firePropertyChange();
     }
 
-    public void switchToLogInView() {
+    public void switchToLoginView() {
         viewManagerModel.setState(loginViewModel.getViewName());
         viewManagerModel.firePropertyChange();
     }

@@ -15,7 +15,7 @@ public class LaunchController {
     }
 
     public void SwitchToLogIn() {
-        launchUseCaseInteractor.switchToLogInView();
+        launchUseCaseInteractor.switchToLoginView();
     }
 
 }
