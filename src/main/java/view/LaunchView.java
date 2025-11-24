@@ -202,7 +202,7 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
             return;
         }
         if (evt.getSource() == toLoginButton) {
-            launchController.SwitchToLogIn();
+            launchController.SwitchToLogin();
         } else if (evt.getSource() == toSignUpButton) {
             launchController.SwitchToSignUp();
         }

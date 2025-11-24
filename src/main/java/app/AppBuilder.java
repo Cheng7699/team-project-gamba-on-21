@@ -206,20 +206,6 @@ public class AppBuilder {
 
         blackjackView.setHitActionListener(e -> {
             controller.hit(blackjackGame.getPlayer(), false);});
-
-    /**
-     * Adds the Launch Use Case to the application.
-     * @return this builder
-     */
-    public AppBuilder addLaunchUseCase() {
-        final LaunchOutputBoundary launchOutputBoundary = new LaunchPresenter(viewManagerModel,
-                loginViewModel, signupViewModel);
-
-        final LaunchInputBoundary launchInteractor =
-                new use_case.launch.LaunchInteractor(launchOutputBoundary);
-
-        final LaunchController launchController = new LaunchController(launchInteractor);
-        launchView.setLaunchController(launchController);
         return this;
     }
 
