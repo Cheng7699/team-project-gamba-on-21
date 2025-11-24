@@ -25,7 +25,7 @@ public class TopupInteractor implements TopupInputBoundary {
     public void execute(TopupInputData topupInputData) {
         try {
             int topupAmount = Integer.parseInt(topupInputData.getTopupAmount());
-            final Accounts user = accountFactory.create();       //TODO: add userfactory functions!
+//            final Accounts user = accountFactory.create();       //TODO: add userfactory functions!
         }
         catch(NumberFormatException e)
         {userpresenter.prepareFailureView("Please enter an integer");}

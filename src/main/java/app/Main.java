@@ -6,9 +6,10 @@ public class Main {
     public static void main(String[] args) {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
-                .addLaunchView()
                 .addLoginView()
                 .addSignupView()
+                .addLaunchView()
+                .addLaunchUseCase()
                 .addLoggedInView()
 //                .addTopUpView()
                 .addBlackjackView()

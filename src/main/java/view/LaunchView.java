@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.launch.LaunchController;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,9 @@ import java.io.IOException;
 import java.net.URL;
 
 import framework.RoundedButton;
+import interface_adapter.launch.LaunchViewModel;
+import interface_adapter.login.LoginViewModel;
+import interface_adapter.signup.SignupViewModel;
 
 
 public class LaunchView extends JPanel implements ActionListener, PropertyChangeListener {
@@ -24,6 +28,10 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
 
 
     private LaunchController launchController = null;
+    LaunchViewModel launchViewModel;
+    ViewManagerModel viewManagerModel;
+    SignupViewModel signupViewModel;
+    LoginViewModel loginViewModel;
 
     private final RoundedButton toSignUpButton;
     private final RoundedButton toLoginButton;
@@ -32,7 +40,16 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
     private final int buttonHeight = 5;
     private final int buttonWidth = 5;
 
-    public LaunchView() {
+    public LaunchView(LaunchViewModel launchViewModel,
+                      ViewManagerModel viewManagerModel,
+                      SignupViewModel signupViewModel,
+                      LoginViewModel loginViewModel) {
+
+        this.launchViewModel = launchViewModel;
+        this.viewManagerModel = viewManagerModel;
+        this.signupViewModel = signupViewModel;
+        this.loginViewModel = loginViewModel;
+        this.loginViewModel.addPropertyChangeListener(this);
 
         //Choose the layout
         setLayout(new GridBagLayout());
@@ -49,8 +66,16 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
 
         toLoginButton = new RoundedButton("Login", buttonRadius);
         toSignUpButton = new RoundedButton("Sign Up", buttonRadius);
-        toLoginButton.addActionListener(this);
-        toSignUpButton.addActionListener(this);
+        toLoginButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) { launchController.SwitchToLogin();}
+                }
+        );
+        toSignUpButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) { launchController.SwitchToSignUp();}
+                }
+        );
 
         // Choose font sizes
         try {
