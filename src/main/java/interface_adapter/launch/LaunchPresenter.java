@@ -24,7 +24,7 @@ public class LaunchPresenter implements LaunchOutputBoundary {
         viewManagerModel.firePropertyChange();
     }
 
-    public void switchToLogInView() {
+    public void switchToLoginView() {
         viewManagerModel.setState(loginViewModel.getViewName());
         viewManagerModel.firePropertyChange();
     }
