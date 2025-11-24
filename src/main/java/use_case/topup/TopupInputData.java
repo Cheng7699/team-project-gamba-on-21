@@ -14,4 +14,3 @@ public class TopupInputData {
 
     String getTopupAmount() {return topupAmount;}
 }
-

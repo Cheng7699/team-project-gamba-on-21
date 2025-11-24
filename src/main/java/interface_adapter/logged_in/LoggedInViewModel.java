@@ -7,6 +7,8 @@ import interface_adapter.ViewModel;
  */
 public class LoggedInViewModel extends ViewModel<LoggedInState> {
 
+    public static final String VIEW_NAME = "logged in";
+
     public LoggedInViewModel() {
         super("logged in");
         setState(new LoggedInState());
