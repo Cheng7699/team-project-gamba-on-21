@@ -59,7 +59,7 @@ public class Hand {
         Integer aces = 0;
         for (Card card : this.cards) {
             result += card.getNumValue();
-            if (card.isAce()) { aces++; }
+            if (card.isAce() && card.getNumValue() == 11) { aces++; }
         }
         while (result > 21 && aces > 0) {
             result -= 10;
@@ -76,8 +76,10 @@ public class Hand {
         for (Card card : this.cards) {
             if (card.isAce() && card.getNumValue() == 11) {
                 card.setNumValue(1);
+                return;
             }
         }
+        return;
     }
 
     public boolean isBust() { return this.handTotalNumber > 21; }

@@ -16,7 +16,6 @@ public class PlayerHitInteractor implements PlayerHitInputBoundary{
 
     @Override
     public void execute(PlayerHitInputData inputData) {
-        BlackjackPlayer player = inputData.getBlackjackPlayer();
         Hand currentHand = getCurrentHand(inputData);
 
         Card newCard = deck.drawCard();
