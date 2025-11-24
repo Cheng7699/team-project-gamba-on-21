@@ -68,12 +68,12 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
         toSignUpButton = new RoundedButton("Sign Up", buttonRadius);
         toLoginButton.addActionListener(
                 new ActionListener() {
-                    public void actionPerformed(ActionEvent e) { launchController.SwitchToLogin();}
+                    public void actionPerformed(ActionEvent e) { launchController.switchToLogin();}
                 }
         );
         toSignUpButton.addActionListener(
                 new ActionListener() {
-                    public void actionPerformed(ActionEvent e) { launchController.SwitchToSignUp();}
+                    public void actionPerformed(ActionEvent e) { launchController.switchToSignUp();}
                 }
         );
 
@@ -202,14 +202,20 @@ public class LaunchView extends JPanel implements ActionListener, PropertyChange
             return;
         }
         if (evt.getSource() == toLoginButton) {
-            launchController.SwitchToLogin();
+            launchController.switchToLogin();
+            viewManagerModel.setState("login");
         } else if (evt.getSource() == toSignUpButton) {
-            launchController.SwitchToSignUp();
+            launchController.switchToSignUp();
+            viewManagerModel.setState("sign up");
         }
     }
 
 @Override
-    public void propertyChange(PropertyChangeEvent evt) { JOptionPane.showMessageDialog(this, "Cancel not implemented yet."); }
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (launchController == null) {
+            JOptionPane.showMessageDialog(this, "Cancel not implemented yet.");
+    }
+    }
 
     public String getViewName() {
         return viewName;
