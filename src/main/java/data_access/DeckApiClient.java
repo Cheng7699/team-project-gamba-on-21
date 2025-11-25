@@ -21,7 +21,7 @@ public class DeckApiClient {
     private static final String API_URL = "https://deckofcardsapi.com/api/";
 
 
-    String createDeck(Integer deckCount, Boolean shuffled, Boolean jokers) throws IOException {
+    public String createDeck(Integer deckCount, Boolean shuffled, Boolean jokers) throws IOException {
         String url = API_URL + "/deck/new/";
         if (shuffled) {url += "shuffle/";}
         url += "?deckCount="+deckCount.toString();
@@ -40,7 +40,7 @@ public class DeckApiClient {
 
     }
 
-    Card drawCard(String deckId) throws IOException {
+    public Card drawCard(String deckId) throws IOException {
         String url = API_URL + "deck/" + deckId + "/draw/?count=1";
         final JSONObject responseBody = getResponseBody(url);
 
@@ -53,7 +53,7 @@ public class DeckApiClient {
         }
     }
 
-    Card[] drawCards(String deckId, Integer number) throws IOException {
+    public Card[] drawCards(String deckId, Integer number) throws IOException {
         String url = API_URL + "deck/" + deckId + "/draw/?count=" + number.toString();
         final JSONObject responseBody = getResponseBody(url);
 
@@ -70,7 +70,7 @@ public class DeckApiClient {
     /**
     Adds a card to an existing Pile, or creates a pile containing said card
      */
-    void addCard(String deckId, String pileName, Card card) throws IOException {
+    public void addCard(String deckId, String pileName, Card card) throws IOException {
         String url = API_URL + "deck/" + deckId + "/pile/" + pileName
                 + "/add/?cards=" + card.getCode();
         final JSONObject responseBody = getResponseBody(url);
@@ -80,7 +80,7 @@ public class DeckApiClient {
         }
     }
 
-    void addCards(String deckId, String pileName, Card[] cards) throws IOException {
+    public void addCards(String deckId, String pileName, Card[] cards) throws IOException {
         String cardCodes = "";
         for (Card card : cards) {
             cardCodes += card.getCode();
@@ -97,7 +97,7 @@ public class DeckApiClient {
     }
 
 
-    Card[] listPile(String deckId, String pileName) throws IOException {
+    public Card[] listPile(String deckId, String pileName) throws IOException {
         String url = API_URL + "deck/" + deckId + "/pile/" + pileName + "/list";
         final JSONObject responseBody = getResponseBody(url);
         if (!responseBody.isEmpty() && responseBody.getBoolean("success")) {
@@ -110,7 +110,7 @@ public class DeckApiClient {
         }
     }
 
-    void pileRemoveCard(String deckId, String pileName, Card card) throws IOException {
+    public void pileRemoveCard(String deckId, String pileName, Card card) throws IOException {
         String url = API_URL + "deck/" + deckId + "/pile/" + pileName
                 + "/draw/?cards="+card.getCode();
         final JSONObject responseBody = getResponseBody(url);
@@ -129,7 +129,7 @@ public class DeckApiClient {
         return responseBody;
     }
 
-    Card[] getJsonCards(JSONArray cards) {
+    private Card[] getJsonCards(JSONArray cards) {
         Card[] cardArray = new Card[cards.length()];
         for (int i = 0; i < cards.length(); i++) {
             JSONObject card = cards.getJSONObject(i);
