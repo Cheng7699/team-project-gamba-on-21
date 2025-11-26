@@ -6,6 +6,7 @@ import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.topup.TopupUserDataAccessInterface;
 
 import java.io.*;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                                                  LoginUserDataAccessInterface,
                                                  ChangePasswordUserDataAccessInterface,
-                                                 LogoutUserDataAccessInterface {
+                                                 LogoutUserDataAccessInterface, TopupUserDataAccessInterface {
 
     private static final String HEADER = "username,password";
 
@@ -120,5 +121,11 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         // Replace the User object in the map
         accounts.put(user.getUsername(), user);
         save();
+    }
+    @Override
+    public void topup(Accounts user) {
+        // Replace the old entry with the new balance
+        accounts.put(user.getUsername(), user);
+
     }
 }

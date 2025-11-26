@@ -21,6 +21,8 @@ import interface_adapter.playerHit.PlayerHitPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.topup.TopUpController;
+import interface_adapter.topup.TopUpPresenter;
 import interface_adapter.topup.TopupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
@@ -41,6 +43,10 @@ import use_case.playerHit.PlayerHitUserDataAccessInterface;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.topup.TopupInputBoundary;
+import use_case.topup.TopupInputData;
+import use_case.topup.TopupInteractor;
+import use_case.topup.TopupOutputBoundary;
 import view.BlackjackView;
 import view.LoggedInView;
 import view.LoginView;
@@ -178,6 +184,18 @@ public class AppBuilder {
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
+        return this;
+    }
+
+    public AppBuilder addTopupUseCase() {
+        final TopupOutputBoundary topupOutputBoundary = new TopUpPresenter(topupViewModel,
+                loggedInViewModel, viewManagerModel);
+
+        final TopupInputBoundary topupInteractor =
+                new TopupInteractor(userDataAccessObject, topupOutputBoundary,userFactory);
+
+        TopUpController topupController = new TopUpController(topupInteractor);
+        topUpView.setTopupController(topupController);
         return this;
     }
 

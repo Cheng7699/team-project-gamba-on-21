@@ -116,5 +116,11 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
 
     public String getViewName() {
         return VIEW_NAME;
+
+
+    }
+
+    public void setTopupController(TopUpController topupController) {
+        this.topUpController = topupController;
     }
 }
