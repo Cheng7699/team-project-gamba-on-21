@@ -91,7 +91,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
             }
         }
         else if (evt.getSource().equals(topUpButton)) {
-            navigateTo("top up");
+            navigateTo(TopUpView.VIEW_NAME);
         }
         else if (evt.getSource().equals(playButton)) {
             navigateTo(BlackjackView.VIEW_NAME);
