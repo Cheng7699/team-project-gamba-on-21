@@ -11,7 +11,7 @@ public class Main {
                 .addLaunchView()
                 .addLaunchUseCase()
                 .addLoggedInView()
-//                .addTopUpView()
+                .addTopUpView()
                 .addBlackjackView()
 //                .addRulesView()
                 .addLaunchUseCase()

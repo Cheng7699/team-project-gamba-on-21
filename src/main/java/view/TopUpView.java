@@ -110,6 +110,11 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
     public void propertyChange(PropertyChangeEvent evt) {
         final TopUpState state =  (TopUpState) evt.getNewValue();
 
+        //TODO:finish
 
+    }
+
+    public String getViewName() {
+        return VIEW_NAME;
     }
 }

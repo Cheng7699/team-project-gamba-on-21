@@ -21,6 +21,7 @@ import interface_adapter.playerHit.PlayerHitPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.topup.TopupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -76,6 +77,7 @@ public class AppBuilder {
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LaunchViewModel launchViewModel;
+    private TopupViewModel topupViewModel;
 
     private TopUpView topUpView;
     private BlackjackView blackjackView;
@@ -116,12 +118,13 @@ public class AppBuilder {
         return this;
     }
 
-//    public AppBuilder addTopUpView() {
-//        topUpView = new TopUpView(loggedInViewModel, viewManagerModel);
-//        cardPanel.add(topUpView, topUpView.getViewName());
-//        return this;
-//    }
-//
+    public AppBuilder addTopUpView() {
+        topupViewModel = new TopupViewModel();
+        topUpView = new TopUpView(topupViewModel, viewManagerModel);
+        cardPanel.add(topUpView, topUpView.getViewName());
+        return this;
+    }
+
     public AppBuilder addBlackjackView() {
         blackjackView = new BlackjackView(loggedInViewModel, viewManagerModel);
         cardPanel.add(blackjackView, blackjackView.getViewName());
