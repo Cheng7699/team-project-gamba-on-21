@@ -12,15 +12,14 @@ import use_case.logout.LogoutOutputData;
  * The Presenter for the Logout Use Case.
  */
 public class LogoutPresenter implements LogoutOutputBoundary {
-
-    private LoggedInViewModel loggedInViewModel;
-    private ViewManagerModel viewManagerModel;
-    private LoginViewModel loginViewModel;
+    // REFACTORED: making fields final for immutability and thread safety
+    private final LoggedInViewModel loggedInViewModel;
+    private final ViewManagerModel viewManagerModel;
+    private final LoginViewModel loginViewModel;
 
     public LogoutPresenter(ViewManagerModel viewManagerModel,
                           LoggedInViewModel loggedInViewModel,
                            LoginViewModel loginViewModel) {
-
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
@@ -28,29 +27,33 @@ public class LogoutPresenter implements LogoutOutputBoundary {
 
     @Override
     public void prepareSuccessView(LogoutOutputData response) {
-        // 1. get the LoggedInState out of the appropriate View Model
+        // REFACTORED: extracting state update logic into separate methods for SRP
+        clearLoggedInState();
+        updateLoginState(response.getUsername());
+        switchToLoginView();
+    }
+
+    // REFACTORED: extracting method to clear logged-in state (SRP)
+    private void clearLoggedInState() {
         LoggedInState loggedInState = loggedInViewModel.getState();
-        // 2. set the username in the state to the empty string
         loggedInState.setUsername("");
-        // 3. firePropertyChanged so that the View that is listening is updated.
         loggedInViewModel.setState(loggedInState);
         loggedInViewModel.firePropertyChange();
+    }
 
-        // Update LoginState
-
-        // 1. get the LoginState out of the appropriate View Model
+    // REFACTORED: extracting method to update login state (srp)
+    private void updateLoginState(String username) {
         LoginState loginState = loginViewModel.getState();
-        // 2. set the username in the state to be the username of the user that just logged out
-        loginState.setUsername(response.getUsername());
-        // 3. clear the password and any login errors to ensure clean state
+        loginState.setUsername(username);
         loginState.setPassword("");
         loginState.setLoginError(null);
-        // 4. firePropertyChanged so that the View that is listening is updated.
         loginViewModel.setState(loginState);
         loginViewModel.firePropertyChange();
+    }
 
-        // This code tells the View Manager to switch to the LoginView.
-        this.viewManagerModel.setState(loginViewModel.getViewName());
-        this.viewManagerModel.firePropertyChange();
+    // REFACTORED: extracting method to switch views (SRP)
+    private void switchToLoginView() {
+        viewManagerModel.setState(loginViewModel.getViewName());
+        viewManagerModel.firePropertyChange();
     }
 }
