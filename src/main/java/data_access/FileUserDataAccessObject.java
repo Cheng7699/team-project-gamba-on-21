@@ -21,7 +21,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                                                  ChangePasswordUserDataAccessInterface,
                                                  LogoutUserDataAccessInterface, TopupUserDataAccessInterface {
 
-    private static final String HEADER = "username,password";
+    private static final String HEADER = "username,password,balance";
 
     private final File csvFile;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -40,6 +40,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         csvFile = new File(csvPath);
         headers.put("username", 0);
         headers.put("password", 1);
+        headers.put("balance", 2);
 
         if (csvFile.length() == 0) {
             save();
@@ -58,7 +59,8 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                     final String[] col = row.split(",");
                     final String username = String.valueOf(col[headers.get("username")]);
                     final String password = String.valueOf(col[headers.get("password")]);
-                    final Accounts user = userFactory.create(username, password);
+                    final int balance = Integer.parseInt(col[headers.get("balance")]);
+                    final Accounts user = userFactory.create(username, password,balance);
                     accounts.put(username, user);
                 }
             }
@@ -76,8 +78,8 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
             writer.newLine();
 
             for (Accounts user : accounts.values()) {
-                final String line = String.format("%s,%s",
-                        user.getUsername(), user.getPassword());
+                final String line = String.format("%s,%s,%s",
+                        user.getUsername(), user.getPassword(), user.getBalance());
                 writer.write(line);
                 writer.newLine();
             }
@@ -126,6 +128,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
     public void topup(Accounts user) {
         // Replace the old entry with the new balance
         accounts.put(user.getUsername(), user);
+        save();
 
     }
 }

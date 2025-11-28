@@ -28,17 +28,22 @@ public class TopUpPresenter implements TopupOutputBoundary {
     public void prepareSuccessView(TopupOutputData outputData) {
         // On success, go back to the logged in page
         final LoggedInState loggedinState = loggedinViewModel.getState();
-        loggedinState.setUsername(outputData.getUsername());
+        loggedinState.setBalance(outputData.getnewBalance());
         loggedinViewModel.firePropertyChange();
 
         viewManagerModel.setState(loggedinViewModel.getViewName());
         viewManagerModel.firePropertyChange();
+        loggedinViewModel.firePropertyChange("balance");
     }
 
     @Override
     public void prepareFailureView(String errorMessage) {
         final TopUpState topupState = topupViewModel.getState();
-        //TODO: Finish Topup State
+
+        topupState.setTopupAmountError(errorMessage);
+
+        topupViewModel.setState(topupState);
+        topupViewModel.firePropertyChange();
     }
 
 }

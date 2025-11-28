@@ -21,10 +21,11 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
 
 
     private final TopupViewModel topupViewModel;
-    private final JTextField topupInputField = new  JTextField(15);
-    private TopUpController topUpController = null;
     private final ViewManagerModel viewManagerModel;
+    private TopUpController topUpController = null;
 
+    private final JLabel topupErrorLabel = new JLabel();
+    private final JTextField topupInputField = new  JTextField(20);
     private final JButton topup;
     private final JButton cancel;
 
@@ -40,6 +41,8 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
                 new JLabel(TopupViewModel.TOPUP_LABEL), topupInputField
         );
 
+        topupErrorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         final JPanel buttons = new JPanel();
         topup = new JButton(TopupViewModel.TOPUP_BUTTON_LABEL);
         buttons.add(topup);
@@ -51,11 +54,15 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
                     public void actionPerformed(ActionEvent evt){
                         if (evt.getSource().equals(topup)){
                             final TopUpState currentState = topupViewModel.getState();
+                            if (currentState.getTopupAmount() !="") {
+                                topupErrorLabel.setText("");
+                                System.out.println("topupcontoller executed with:" + currentState.getUsername() + currentState.getTopupAmount());
 
-                            topUpController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getTopupAmount()
-                            );
+                                topUpController.execute(
+                                        currentState.getUsername(),
+                                        currentState.getTopupAmount()
+                                );
+                            }
                         }
                     }
 
@@ -68,7 +75,7 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
         topupInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
                 final TopUpState currentState = topupViewModel.getState();
-                currentState.setUsername(topupInputField.getText());
+                currentState.setTopupAmount(topupInputField.getText());
                 topupViewModel.setState(currentState);
             }
 
@@ -88,12 +95,19 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
             }
         });
 
-        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new BorderLayout());
 
-        this.add(title);
-        this.add(topupInfo);
-        this.add(topupInputField);
-        this.add(buttons);
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.add(Box.createVerticalStrut(10));
+        content.add(title);
+        content.add(Box.createVerticalStrut(10));
+        content.add(topupInfo);
+        content.add(Box.createVerticalStrut(20));
+        content.add(topupErrorLabel);
+
+        add(content, BorderLayout.NORTH);
+        add(buttons, BorderLayout.SOUTH);
 
 
 
@@ -101,7 +115,8 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
 
     public void actionPerformed(ActionEvent evt){
         if  (evt.getSource().equals(cancel)){
-            viewManagerModel.setState(topupViewModel.getViewName());
+            topupErrorLabel.setText("");
+            viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();
         }
     }
@@ -109,15 +124,19 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final TopUpState state =  (TopUpState) evt.getNewValue();
+        topupInputField.setText(state.getTopupAmount());
 
-        //TODO:finish
+        if(state.getTopupAmountError() != null){
+            topupErrorLabel.setText(state.getTopupAmountError());
+
+            state.setTopupAmountError(null);
+            topupViewModel.setState(state);
+        }
 
     }
 
     public String getViewName() {
         return VIEW_NAME;
-
-
     }
 
     public void setTopupController(TopUpController topupController) {

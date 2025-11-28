@@ -94,6 +94,7 @@ public class AppBuilder {
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        topupViewModel = new TopupViewModel();
     }
 
     public AppBuilder addLaunchView() {
@@ -119,13 +120,12 @@ public class AppBuilder {
 
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel, viewManagerModel);
+        loggedInView = new LoggedInView(loggedInViewModel, viewManagerModel, topupViewModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
     }
 
     public AppBuilder addTopUpView() {
-        topupViewModel = new TopupViewModel();
         topUpView = new TopUpView(topupViewModel, viewManagerModel);
         cardPanel.add(topUpView, topUpView.getViewName());
         return this;
@@ -192,7 +192,7 @@ public class AppBuilder {
                 loggedInViewModel, viewManagerModel);
 
         final TopupInputBoundary topupInteractor =
-                new TopupInteractor(userDataAccessObject, topupOutputBoundary,userFactory);
+                new TopupInteractor(userDataAccessObject, topupOutputBoundary, userFactory);
 
         TopUpController topupController = new TopUpController(topupInteractor);
         topUpView.setTopupController(topupController);

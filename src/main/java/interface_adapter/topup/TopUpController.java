@@ -26,6 +26,7 @@ public class TopUpController {
         final TopupInputData topupInputData = new TopupInputData(
                 username, topupAmount);
 
+        System.out.println("user topup use case executed with:"+username+topupAmount);
         userTopupUseCaseInteractor.execute(topupInputData);
     }
 
