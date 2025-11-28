@@ -61,12 +61,12 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(logIn)) {
-                            final LoginState currentState = loginViewModel.getState();
+                            // read directly from input fields to ensure we get current values
+                            // this avoids any potential state synchronization issues
+                            final String username = usernameInputField.getText();
+                            final String password = new String(passwordInputField.getPassword());
 
-                            loginController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword()
-                            );
+                            loginController.execute(username, password);
                         }
                     }
                 }
@@ -208,6 +208,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
     private void setFields(LoginState state) {
         usernameInputField.setText(state.getUsername());
+        // only clear password field if state password is empty (like after logout)
+        // otherwise, let DocumentListener handle updates to avoid interfering with user input
+        if (state.getPassword() == null || state.getPassword().isEmpty()) {
+            passwordInputField.setText("");
+        }
     }
 
     public String getViewName() {
