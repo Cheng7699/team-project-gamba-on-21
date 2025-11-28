@@ -13,7 +13,7 @@ public class PlayerStandController {
         this.interactor = interactor;
     }
 
-    public void stand(BlackjackPlayer player, BlackjackGame game, boolean isInSplittedHand) {
-        interactor.execute(new PlayerStandInputData(player, game, isInSplittedHand));
+    public void stand(BlackjackGame game) {
+        interactor.execute(new PlayerStandInputData(game));
     }
 }

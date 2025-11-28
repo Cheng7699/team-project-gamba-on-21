@@ -8,6 +8,7 @@ public class LoggedInState {
 
     private String password = "";
     private String passwordError;
+    private String gameState;
 
     private int balance;
     private int selfLimit;
@@ -42,6 +43,9 @@ public class LoggedInState {
     public String getPassword() {
         return password;
     }
+
+    public String getGameState() { return gameState; }
+
 
     public void setPasswordError(String passwordError) {
         this.passwordError = passwordError;

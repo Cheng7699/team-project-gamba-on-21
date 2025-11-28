@@ -5,6 +5,7 @@ public class BlackjackGame {
     private String deckID;
     private final BlackjackDealer dealer;
     private final BlackjackPlayer player;
+    private boolean isSplitted;
     private float betAmount;
     private float odds;
     private String result;
@@ -16,6 +17,7 @@ public class BlackjackGame {
         this.betAmount = 0;
         this.odds = 1;
         this.result = "InGame";
+        this.isSplitted = false;
     }
 
     public String getState() { return state; }
@@ -25,6 +27,8 @@ public class BlackjackGame {
     public float getBetAmount() { return betAmount; }
     public float getOdds() { return odds; }
     public String getResult() { return result; }
+    public boolean isSplitted() { return isSplitted; }
+    public void resetSplit() { this.isSplitted = false; }
 
     public void setDeckID(String deckID) { this.deckID = deckID; }
     public void setBetAmount(float betAmount) { this.betAmount = betAmount; }
