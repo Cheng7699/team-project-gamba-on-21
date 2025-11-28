@@ -25,6 +25,13 @@ public class Hand {
         this.updateHandTotalNumber();
     }
 
+    public void addCards(Card[] cards) {
+        for (Card card : cards) {
+            this.cards.add(card);
+            this.updateHandTotalNumber();
+        }
+    }
+
     /**
      * This method will not check the validity of index so make sure the input is valid.
      * This method will automatically update the total value of all cards in the hand.
@@ -79,8 +86,14 @@ public class Hand {
                 return;
             }
         }
-        return;
     }
 
     public boolean isBust() { return this.handTotalNumber > 21; }
+
+    public void reset() {
+        this.handTotalNumber = 0;
+        while (this.cards.size() > 0) {
+            removeCard(0);
+        }
+    }
 }

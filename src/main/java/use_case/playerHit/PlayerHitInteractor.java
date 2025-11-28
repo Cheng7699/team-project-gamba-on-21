@@ -30,6 +30,7 @@ public class PlayerHitInteractor implements PlayerHitInputBoundary{
         if (inputData.isInSplittedHand()) {
             return player.getHands().get(1);
         }
-        else { return player.getHands().get(0); }
+        else {
+            return player.getHands().get(0); }
     }
 }

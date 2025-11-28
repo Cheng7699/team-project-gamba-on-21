@@ -1,7 +1,6 @@
 package view;
 
-import entity.Card;
-import entity.Hand;
+import entity.*;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -43,21 +42,25 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private final JButton placeBetButton = new JButton("Place Bet");
     private final JButton newRoundButton = new JButton("New Round");
 
-    private Hand playerHand;
-    private Hand dealerHand;
+    private BlackjackGame game;
+    private Hand playerHand = new Hand("");
+    private Hand dealerHand = new Hand("");
     private boolean hideDealerHoleCard;
     private boolean betLocked;
     private boolean roundActive;
 
     private ActionListener hitActionListener;
     private ActionListener standActionListener;
-    private ActionListener newRoundActionListener;
+    private ActionListener gameStartActionListener;
     private ActionListener placeBetActionListener;
 
     public BlackjackView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
         this.loggedInViewModel = loggedInViewModel;
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
+        this.game = new BlackjackGame(null,
+                new BlackjackDealer(),
+                new BlackjackPlayer(loggedInViewModel.getState().getUsername()));
 
         setLayout(new BorderLayout(12, 12));
         setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -148,12 +151,12 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         }
         else if (source.equals(placeBetButton)) {
             confirmBetAndStartRound();
+            if (gameStartActionListener != null) {
+                gameStartActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "newRound"));
+            }
         }
         else if (source.equals(newRoundButton)) {
             resetRound();
-            if (newRoundActionListener != null) {
-                newRoundActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "newRound"));
-            }
         }
         else if (source.equals(hitButton)) {
             playerHits();
@@ -207,6 +210,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     }
 
     private void startRound() {
+
         roundActive = true;
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
@@ -228,9 +232,11 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         playerHand = null;
         dealerHand = null;
         hideDealerHoleCard = false;
+
         playerHandLabel.setText("Player: -");
         dealerHandLabel.setText("Dealer: -");
         statusLabel.setText("Place your bet to start playing.");
+
     }
 
     private void playerHits() {
@@ -302,6 +308,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         return card.getValue() + " of " + card.getSuit();
     }
 
+    public void showDealerCard() {
+        updateHandLabels(false);
+    }
+
     public String getViewName() {
         return viewName;
     }
@@ -338,11 +348,14 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.standActionListener = standActionListener;
     }
 
-    public void setNewRoundActionListener(ActionListener newRoundActionListener) {
-        this.newRoundActionListener = newRoundActionListener;
+    public void setGameStartActionListener(ActionListener gameStartActionListener) {
+        this.gameStartActionListener = gameStartActionListener;
     }
 
     public void setPlaceBetActionListener(ActionListener placeBetActionListener) {
         this.placeBetActionListener = placeBetActionListener;
     }
+
+
+    public void setGame(BlackjackGame game) { this.game = game; }
 }

@@ -7,6 +7,8 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import use_case.game_start.GameStartDataAccessInterface;
+import use_case.playerStand.PlayerStandUserDataAccessInterface;
 
 import java.io.IOException;
 
@@ -15,17 +17,17 @@ import java.io.IOException;
  Reminder: The card draw/deck is a deck; The player/dealer hands are piles
  Also, the piles are part of the deck itself!!
  */
-public class DeckApiClient {
+public class DeckApiClient implements GameStartDataAccessInterface,
+        PlayerStandUserDataAccessInterface {
 
     private final OkHttpClient client = new OkHttpClient();
     private static final String API_URL = "https://deckofcardsapi.com/api/";
 
 
-    public String createDeck(Integer deckCount, Boolean shuffled, Boolean jokers) throws IOException {
+    public String createDeck(Boolean shuffled, Boolean jokers) throws IOException {
         String url = API_URL + "/deck/new/";
         if (shuffled) {url += "shuffle/";}
-        url += "?deckCount="+deckCount.toString();
-        if (jokers) {url += "&jokers_enabled=true";}
+        if (jokers) {url += "?jokers_enabled=true";}
 
 
         final JSONObject responseBody = getResponseBody(url);
@@ -141,6 +143,15 @@ public class DeckApiClient {
             );
         }
         return cardArray;
+    }
+
+    public void shuffle(String deckId) throws IOException {
+        String url = API_URL + "deck/" + deckId + "/shuffle/";
+        final JSONObject responseBody = getResponseBody(url);
+
+        if (responseBody.isEmpty() || !responseBody.getBoolean("success")) {
+            throw new IOException("There is an error with the API interaction");
+        }
     }
 
 

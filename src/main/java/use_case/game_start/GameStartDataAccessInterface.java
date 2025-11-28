@@ -1,10 +1,11 @@
-package use_case.playerStand;
+package use_case.game_start;
 
 import entity.Card;
 
 import java.io.IOException;
 
-public interface PlayerStandUserDataAccessInterface {
+public interface GameStartDataAccessInterface {
+
     public String createDeck(Boolean shuffled, Boolean jokers) throws IOException;
 
     public Card drawCard(String deckId) throws IOException;
@@ -14,5 +15,7 @@ public interface PlayerStandUserDataAccessInterface {
     public void addCard(String deckId, String pileName, Card card) throws IOException;
 
     public void addCards(String deckId, String pileName, Card[] cards) throws IOException;
+
+    public void shuffle(String deckId) throws IOException;
 
 }

@@ -6,29 +6,43 @@ import entity.BlackjackPlayer;
 import entity.Card;
 import entity.Hand;
 
+import java.io.IOException;
+
 public class PlayerStandInteractor implements PlayerStandInputBoundary {
 
-    private final PlayerStandUserDataAccessInterface deck;
+    private final BlackjackGame game;
+    private final PlayerStandUserDataAccessInterface apiClient;
     private final PlayerStandOutputBoundary presenter;
 
-    public PlayerStandInteractor(PlayerStandUserDataAccessInterface deck, PlayerStandOutputBoundary presenter) {
-        this.deck = deck;
+    public PlayerStandInteractor(BlackjackGame game, PlayerStandUserDataAccessInterface apiClient, PlayerStandOutputBoundary presenter) {
+        this.game = game;
+        this.apiClient = apiClient;
         this.presenter = presenter;
     }
 
     @Override
     public void execute(PlayerStandInputData inputData) {
-        BlackjackGame game = inputData.getBlackjackGame();
+        BlackjackGame game = inputData.getGame();
         BlackjackDealer dealer = game.getDealer();
 
         // get current player hand
-        Hand playerHand = getCurrentHand(inputData);
+        Hand playerHand = getCurrentHand();
 
         // transition to dealer's turn
         game.toDealerTurn();
 
         // show dealer's hidden card
         dealer.setHideFirstCard(false);
+
+        /** Tried to make it show the cards one by one
+        presenter.present(new PlayerStandOutputData(game));
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            presenter.presentFailView("process interrupted");
+        }
+         */
 
         // dealer must hit until they reach 17 or more (or bust)
         Hand dealerHand = dealer.getHand();
@@ -37,25 +51,41 @@ public class PlayerStandInteractor implements PlayerStandInputBoundary {
         }
         
         while (dealerHand.getHandTotalNumber() < 17 && !dealerHand.isBust()) {
-            Card newCard = deck.drawCard();
-            dealerHand.addCard(newCard);
+            try{
+                Card newCard = apiClient.drawCard(game.getDeckID());
+                dealerHand.addCard(newCard);
+
+                /** Tried to make it show the cards one by one
+                presenter.present(new PlayerStandOutputData(game));
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {
+                    presenter.presentFailView("process interrupted");
+                }
+                 */
+            }
+            catch (IOException e) {
+                presenter.presentFailView("Problem drawing cards");
+            }
+
         }
 
         // determine winner based on blackjack rules
         determineWinner(game, playerHand, dealerHand);
 
         // create output data
-        PlayerStandOutputData outputData = new PlayerStandOutputData(game, dealerHand, playerHand);
+        PlayerStandOutputData outputData = new PlayerStandOutputData(game);
         presenter.present(outputData);
     }
 
-    private Hand getCurrentHand(PlayerStandInputData inputData) {
-        BlackjackPlayer player = inputData.getBlackjackPlayer();
+    private Hand getCurrentHand() {
+        BlackjackPlayer player = game.getPlayer();
         if (player.getHands().isEmpty()) {
             throw new IllegalStateException("Player has no hands");
         }
         
-        if (inputData.isInSplittedHand()) {
+        if (game.isSplitted()) {
             if (player.getHands().size() < 2) {
                 throw new IllegalStateException("Player does not have a split hand");
             }
