@@ -56,8 +56,6 @@ public class TopUpView extends JPanel implements ActionListener, PropertyChangeL
                             final TopUpState currentState = topupViewModel.getState();
                             if (currentState.getTopupAmount() !="") {
                                 topupErrorLabel.setText("");
-                                System.out.println("topupcontoller executed with:" + currentState.getUsername() + currentState.getTopupAmount());
-
                                 topUpController.execute(
                                         currentState.getUsername(),
                                         currentState.getTopupAmount()
