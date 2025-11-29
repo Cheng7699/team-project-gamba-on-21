@@ -5,9 +5,9 @@ package use_case.topup;
  */
 public class TopupOutputData {
 
-    private final String username;
+    private final int newBalance;
 
-    public TopupOutputData(String username){this.username=username;}
+    public TopupOutputData(int newBalance){this.newBalance=newBalance;}
 
-    public String getUsername(){return username;}
+    public int getnewBalance(){return newBalance;}
 }

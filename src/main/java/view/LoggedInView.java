@@ -5,6 +5,9 @@ import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.topup.TopUpController;
+import interface_adapter.topup.TopUpState;
+import interface_adapter.topup.TopupViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +23,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private final String viewName = LoggedInViewModel.VIEW_NAME;
     private final LoggedInViewModel loggedInViewModel;
+    private final TopupViewModel topupViewModel;
     private final ViewManagerModel viewManagerModel;
     private ChangePasswordController changePasswordController = null;
     private LogoutController logoutController;
@@ -33,10 +37,12 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JButton playButton = new JButton("Play");
     private final JButton rulesButton = new JButton("Read Rules");
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
+    public LoggedInView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel,
+                        TopupViewModel topupViewModel) {
         this.loggedInViewModel = loggedInViewModel;
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
+        this.topupViewModel = topupViewModel;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -91,7 +97,19 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
             }
         }
         else if (evt.getSource().equals(topUpButton)) {
-            navigateTo("top up");
+            String username = loggedInViewModel.getState().getUsername();
+
+            TopUpState topupState = topupViewModel.getState();
+
+            topupState.setUsername(username);
+            topupState.setTopupAmount("");
+            topupState.setTopupAmountError(null);
+
+            topupViewModel.setState(topupState);
+            topupViewModel.firePropertyChange();
+
+            navigateTo(TopUpView.VIEW_NAME);
+
         }
         else if (evt.getSource().equals(playButton)) {
             navigateTo(BlackjackView.VIEW_NAME);

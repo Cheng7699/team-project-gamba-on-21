@@ -25,6 +25,12 @@ public class TopupInteractor implements TopupInputBoundary {
     public void execute(TopupInputData topupInputData) {
         try {
             int topUpAmount = Integer.parseInt(topupInputData.getTopupAmount());
+
+            if (topUpAmount <=0){
+                userpresenter.prepareFailureView("Amount must be greater than 0");
+                return;
+            }
+
             final Accounts user = topupUserDataAccess.get(topupInputData.getUsername());
             if (user == null) {
                 userpresenter.prepareFailureView("User not found.");
@@ -32,8 +38,8 @@ public class TopupInteractor implements TopupInputBoundary {
             }
             user.addFunds(topUpAmount);
             topupUserDataAccess.topup(user);
-            
-            final TopupOutputData topupOutputData = new TopupOutputData(user.getUsername());
+            final TopupOutputData topupOutputData = new TopupOutputData(user.getBalance());
+
             userpresenter.prepareSuccessView(topupOutputData);
         }
         catch(NumberFormatException e) {
