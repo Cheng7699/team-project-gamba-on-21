@@ -5,16 +5,10 @@ import entity.Hand;
 
 public class PlayerStandOutputData {
     private final BlackjackGame blackjackGame;
-    private final Hand dealerHand;
-    private final Hand playerHand;
 
-    public PlayerStandOutputData(BlackjackGame blackjackGame, Hand dealerHand, Hand playerHand) {
+    public PlayerStandOutputData(BlackjackGame blackjackGame) {
         this.blackjackGame = blackjackGame;
-        this.dealerHand = dealerHand;
-        this.playerHand = playerHand;
     }
 
-    public BlackjackGame getBlackjackGame() { return blackjackGame; }
-    public Hand getDealerHand() { return dealerHand; }
-    public Hand getPlayerHand() { return playerHand; }
+    public BlackjackGame getGame() { return blackjackGame; }
 }

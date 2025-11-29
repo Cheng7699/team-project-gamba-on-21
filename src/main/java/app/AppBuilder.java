@@ -4,7 +4,11 @@ import data_access.FileUserDataAccessObject;
 import data_access.DeckApiClient;
 import data_access.PlayerHitDataAccess;
 import entity.*;
+import interface_adapter.PlayerStand.PlayerStandController;
+import interface_adapter.PlayerStand.PlayerStandPresenter;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.game_start.GameStartController;
+import interface_adapter.game_start.GameStartPresenter;
 import interface_adapter.launch.LaunchController;
 import interface_adapter.launch.LaunchPresenter;
 import interface_adapter.launch.LaunchViewModel;
@@ -27,6 +31,10 @@ import interface_adapter.topup.TopupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.game_start.GameStartDataAccessInterface;
+import use_case.game_start.GameStartInputBoundary;
+import use_case.game_start.GameStartInteractor;
+import use_case.game_start.GameStartOutputBoundary;
 import use_case.launch.LaunchInputBoundary;
 import use_case.launch.LaunchInteractor;
 import use_case.launch.LaunchOutputBoundary;
@@ -40,6 +48,10 @@ import use_case.playerHit.PlayerHitInputBoundary;
 import use_case.playerHit.PlayerHitInteractor;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitUserDataAccessInterface;
+import use_case.playerStand.PlayerStandInputBoundary;
+import use_case.playerStand.PlayerStandInteractor;
+import use_case.playerStand.PlayerStandOutputBoundary;
+import use_case.playerStand.PlayerStandUserDataAccessInterface;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -89,7 +101,7 @@ public class AppBuilder {
     private BlackjackView blackjackView;
     private RulesView rulesView;
 
-    private BlackjackGame blackjackGame;
+    private BlackjackGame blackjackGame = new BlackjackGame("", null, null);
     private DeckApiClient deckApiClient = new DeckApiClient();
 
     public AppBuilder() {
@@ -215,6 +227,42 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addGameStartUseCase() {
+        GameStartDataAccessInterface apiClient = new DeckApiClient();
+
+        GameStartOutputBoundary presenter = new GameStartPresenter(blackjackView);
+
+        blackjackGame = new BlackjackGame("",
+                new BlackjackDealer(),
+                new BlackjackPlayer(loggedInViewModel.getState().getUsername()));
+
+        GameStartInputBoundary interactor = new GameStartInteractor(blackjackGame, apiClient, presenter);
+
+        GameStartController controller = new GameStartController(interactor);
+
+        blackjackView.setGameStartActionListener(e -> {
+            controller.gameStart(blackjackGame);
+        });
+        return this;
+    }
+
+    public AppBuilder addPlayerStandUseCase() {
+
+        PlayerStandUserDataAccessInterface apiClient = new DeckApiClient();
+
+        PlayerStandOutputBoundary presenter = new PlayerStandPresenter(blackjackView);
+
+        PlayerStandInputBoundary interactor = new PlayerStandInteractor(blackjackGame, apiClient, presenter);
+
+        PlayerStandController controller = new PlayerStandController(interactor);
+
+        blackjackView.setStandActionListener(e -> {
+            controller.stand(blackjackGame);
+        });
+        return this;
+    }
+
+
     public AppBuilder addPlayerHitUseCase() {
 
         PlayerHitUserDataAccessInterface deckAccess = new PlayerHitDataAccess(deckApiClient, blackjackGame);
@@ -226,7 +274,8 @@ public class AppBuilder {
         PlayerHitController controller = new PlayerHitController(interactor);
 
         blackjackView.setHitActionListener(e -> {
-            controller.hit(blackjackGame.getPlayer(), false);});
+            controller.hit(blackjackGame.getPlayer(), false);
+        });
         return this;
     }
 

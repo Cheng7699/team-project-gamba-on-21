@@ -23,5 +23,6 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         view.setHands(playerHand, dealerHand, isHideFirstCard);
 
         if (playerHand.isBust()) { view.showRoundResult("You Busted!"); }
+        else if (dealerHand.isBust()) { view.showRoundResult("You Won!"); }
     }
 }

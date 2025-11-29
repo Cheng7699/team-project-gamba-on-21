@@ -20,7 +20,9 @@ public class Main {
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
+                .addGameStartUseCase()
                 .addPlayerHitUseCase()
+                .addPlayerStandUseCase()
                 .build();
 
         application.pack();

@@ -25,22 +25,33 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareSuccessView(LoginOutputData response) {
-        // On success, update the loggedInViewModel's state
-        final LoggedInState loggedInState = loggedInViewModel.getState();
+        // REFACTORED: extracting state update logic into separate methods for SRP
+        updateLoggedInState(response);
+        clearLoginState();
+        switchToLoggedInView();
+    }
+
+    // REFACTORED: extracting method to update logged-in state (SRP)
+    private void updateLoggedInState(LoginOutputData response) {
+        LoggedInState loggedInState = loggedInViewModel.getState();
         loggedInState.setUsername(response.getUsername());
         loggedInState.setBalance(response.getBalance());
         loggedInState.setSelfLimit(response.getSelfLimit());
         loggedInState.setStatusMessage("Welcome back, " + response.getUsername() + "!");
-        this.loggedInViewModel.firePropertyChange();
-        this.loggedInViewModel.firePropertyChange("balance");
-        this.loggedInViewModel.firePropertyChange("message");
+        loggedInViewModel.firePropertyChange();
+        loggedInViewModel.firePropertyChange("balance");
+        loggedInViewModel.firePropertyChange("message");
+    }
 
-        // and clear everything from the LoginViewModel's state
+    // REFACTORED: extracting method to clear login state (SRP)
+    private void clearLoginState() {
         loginViewModel.setState(new LoginState());
+    }
 
-        // switch to the logged in view
-        this.viewManagerModel.setState(loggedInViewModel.getViewName());
-        this.viewManagerModel.firePropertyChange();
+    // REFACTORED: extracting method to switch views (SRP)
+    private void switchToLoggedInView() {
+        viewManagerModel.setState(loggedInViewModel.getViewName());
+        viewManagerModel.firePropertyChange();
     }
 
     @Override

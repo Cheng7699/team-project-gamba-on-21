@@ -6,8 +6,8 @@ import use_case.logout.LogoutInputBoundary;
  * The controller for the Logout Use Case.
  */
 public class LogoutController {
-
-    private LogoutInputBoundary logoutUseCaseInteractor;
+    // REFACTORED: making field final for immutability and dependency injection compliance
+    private final LogoutInputBoundary logoutUseCaseInteractor;
 
     public LogoutController(LogoutInputBoundary logoutUseCaseInteractor) {
         this.logoutUseCaseInteractor = logoutUseCaseInteractor;
