@@ -78,7 +78,7 @@ public class PlayerHitInteractorTest {
     }
 
     @Test
-    void testAddLetterCardToPlayerWithOneHand() {
+    void testAddFaceCardToPlayerWithOneHand() {
 
         BlackjackPlayer player = initiatePlayerWithOneHand();
         Hand hand = player.getHands().get(0);
@@ -150,7 +150,7 @@ public class PlayerHitInteractorTest {
     }
 
     @Test
-    void testAddLetterCardToPlayerWithTwoHands_FirstHand() {
+    void testAddFaceCardToPlayerWithTwoHands_FirstHand() {
 
         BlackjackPlayer player = initiatePlayerWithTwoHands();
         Hand firstHand = player.getHands().get(0);
@@ -231,7 +231,7 @@ public class PlayerHitInteractorTest {
     }
 
     @Test
-    void testAddLetterCardToPlayerWithTwoHands_SplitHand() {
+    void testAddFaceCardToPlayerWithTwoHands_SplitHand() {
 
         BlackjackPlayer player = initiatePlayerWithTwoHands();
         Hand firstHand = player.getHands().get(0);
