@@ -23,6 +23,7 @@ public class Main {
                 .addGameStartUseCase()
                 .addPlayerSplitUseCase()
                 .addPlayerHitUseCase()
+                .addPlayerDoubleDownUseCase()
                 .addPlayerStandUseCase()
                 .build();
 

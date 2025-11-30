@@ -26,6 +26,8 @@ import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.playerHit.PlayerHitController;
 import interface_adapter.playerHit.PlayerHitPresenter;
+import interface_adapter.playerDoubleDown.PlayerDoubleDownController;
+import interface_adapter.playerDoubleDown.PlayerDoubleDownPresenter;
 import interface_adapter.playerSplit.PlayerSplitController;
 import interface_adapter.playerSplit.PlayerSplitPresenter;
 import interface_adapter.signup.SignupController;
@@ -54,6 +56,10 @@ import use_case.playerHit.PlayerHitInputBoundary;
 import use_case.playerHit.PlayerHitInteractor;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitUserDataAccessInterface;
+import use_case.playerDoubleDown.PlayerDoubleDownInputBoundary;
+import use_case.playerDoubleDown.PlayerDoubleDownInteractor;
+import use_case.playerDoubleDown.PlayerDoubleDownOutputBoundary;
+import use_case.playerDoubleDown.PlayerDoubleDownUserDataAccessInterface;
 import use_case.playerSplit.PlayerSplitDataAccessInterface;
 import use_case.playerSplit.PlayerSplitInputBoundary;
 import use_case.playerSplit.PlayerSplitInteractor;
@@ -327,6 +333,33 @@ public class AppBuilder {
         PayoutInteractor payoutInteractor = new PayoutInteractor(userDataAccessObject, payoutPresenter);
         PayoutController payoutController = new PayoutController(payoutInteractor);
         presenter.setPayoutController(payoutController);
+
+        return this;
+    }
+
+    public AppBuilder addPlayerDoubleDownUseCase() {
+        // Create data access that combines account access and deck access
+        PlayerDoubleDownUserDataAccessInterface dataAccess = 
+                new data_access.PlayerDoubleDownDataAccess(userDataAccessObject, deckApiClient, blackjackGame);
+
+        PlayerDoubleDownOutputBoundary presenter = 
+                new PlayerDoubleDownPresenter(blackjackView, loggedInViewModel);
+
+        PlayerDoubleDownInputBoundary interactor = 
+                new PlayerDoubleDownInteractor(dataAccess, presenter);
+
+        PlayerDoubleDownController controller = new PlayerDoubleDownController(interactor);
+
+        blackjackView.setDoubleDownActionListener(e -> {
+            boolean isSplitHand = "doubleDownSplit".equals(e.getActionCommand());
+            controller.doubleDown(blackjackGame, blackjackGame.getPlayer(), isSplitHand);
+        });
+
+        // wire up payout use case for double down
+        PayoutOutputBoundary payoutPresenter = new PayoutPresenter(loggedInViewModel);
+        PayoutInteractor payoutInteractor = new PayoutInteractor(userDataAccessObject, payoutPresenter);
+        PayoutController payoutController = new PayoutController(payoutInteractor);
+        ((PlayerDoubleDownPresenter) presenter).setPayoutController(payoutController);
 
         return this;
     }
