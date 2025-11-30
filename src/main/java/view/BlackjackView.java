@@ -31,6 +31,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private final JLabel betValueLabel = new JLabel("$0");
     private final JSpinner betSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10_000, 1));
     private final JLabel statusLabel = new JLabel("Place your bet to start playing.");
+    private int actualBalance = 0; // stores the actual balance before bet deduction
 
     private final JLabel dealerHandLabel = new JLabel("Dealer: -");
     private final JLabel playerHandLabel = new JLabel("Player: -");
@@ -126,7 +127,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         betSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                betValueLabel.setText("$" + betSpinner.getValue());
+                int betAmount = (Integer) betSpinner.getValue();
+                betValueLabel.setText("$" + betAmount);
+                updateBalanceDisplay();
             }
         });
 
@@ -176,7 +179,46 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private void updateBalance(LoggedInState state) {
         if (state != null) {
-            balanceValueLabel.setText("$" + state.getBalance());
+            actualBalance = state.getBalance();
+            updateBalanceDisplay();
+            updateBetSpinnerMax();
+        }
+    }
+
+    // updates the balance display to show balance after bet deduction
+    private void updateBalanceDisplay() {
+        if (!betLocked) {
+            int betAmount = (Integer) betSpinner.getValue();
+            int balanceAfterBet = actualBalance - betAmount;
+            balanceValueLabel.setText("$" + balanceAfterBet);
+            
+            // change color if insufficient funds
+            if (balanceAfterBet < 0 || betAmount > actualBalance) {
+                balanceValueLabel.setForeground(Color.RED);
+            } else {
+                balanceValueLabel.setForeground(Color.BLACK);
+            }
+        } else {
+            // when bet is locked, show actual balance (which includes winnings/losses after game ends)
+            balanceValueLabel.setText("$" + actualBalance);
+            balanceValueLabel.setForeground(Color.BLACK);
+        }
+    }
+
+    // updates the spinner's maximum value to current balance
+    private void updateBetSpinnerMax() {
+        if (!betLocked) {
+            SpinnerNumberModel model = (SpinnerNumberModel) betSpinner.getModel();
+            int currentMax = (Integer) model.getMaximum();
+            if (actualBalance != currentMax) {
+                int currentValue = (Integer) betSpinner.getValue();
+                // ensure current value doesn't exceed new max
+                if (currentValue > actualBalance) {
+                    betSpinner.setValue(actualBalance);
+                }
+                // set max to actualBalance (or 0 if balance is negative)
+                model.setMaximum(Math.max(0, actualBalance));
+            }
         }
     }
 
@@ -197,10 +239,31 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             return;
         }
 
+        // check if player has sufficient funds - prevent placing bet if bet > balance
+        if (selectedBet > actualBalance) {
+            statusLabel.setText("Insufficient funds! Your balance is $" + actualBalance + ". Please adjust your bet.");
+            balanceValueLabel.setForeground(Color.RED);
+            // reset bet spinner to balance if it exceeds
+            if (actualBalance > 0) {
+                betSpinner.setValue(actualBalance);
+            } else {
+                betSpinner.setValue(0);
+            }
+            return;
+        }
+
         betLocked = true;
         betSpinner.setEnabled(false);
         placeBetButton.setEnabled(false);
         betValueLabel.setText("$" + selectedBet);
+        
+        // show actual balance after bet is placed
+        updateBalanceDisplay();
+        
+        // set bet amount in game
+        if (game != null) {
+            game.setBetAmount(selectedBet);
+        }
 
         if (placeBetActionListener != null) {
             placeBetActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "placeBet"));
@@ -228,7 +291,16 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         newRoundButton.setEnabled(false);
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
-        betValueLabel.setText("$" + betSpinner.getValue());
+        
+        // reset bet spinner to 0 after game finishes
+        betSpinner.setValue(0);
+        betValueLabel.setText("$0");
+        
+        // restore balance preview and update spinner max
+        // balance should already be updated from payout, but refresh display
+        updateBetSpinnerMax();
+        updateBalanceDisplay();
+        
         playerHand = null;
         dealerHand = null;
         hideDealerHoleCard = false;
@@ -269,6 +341,20 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         newRoundButton.setEnabled(true);
         updateHandLabels(false);
+        
+        // reset bet spinner to 0 after game finishes
+        betSpinner.setValue(0);
+        betValueLabel.setText("$0");
+        
+        // unlock bet controls so user can place new bet
+        betLocked = false;
+        betSpinner.setEnabled(true);
+        placeBetButton.setEnabled(true);
+        
+        // balance should already be updated from payout, but refresh display
+        updateBalanceDisplay();
+        updateBetSpinnerMax();
+        
         statusLabel.setText(message + " Click New Round to place another bet.");
     }
 
@@ -358,4 +444,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
 
     public void setGame(BlackjackGame game) { this.game = game; }
+    
+    public BlackjackGame getGame() { return this.game; }
+    
+    public JSpinner getBetSpinner() { return this.betSpinner; }
 }
