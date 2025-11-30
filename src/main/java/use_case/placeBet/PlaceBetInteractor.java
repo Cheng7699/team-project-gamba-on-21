@@ -7,9 +7,12 @@ import entity.Accounts;
  */
 public class PlaceBetInteractor {
     private final PlaceBetUserDataAccessInterface userDataAccessObject;
+    private final PlaceBetOutputBoundary presenter;
 
-    public PlaceBetInteractor(PlaceBetUserDataAccessInterface userDataAccessObject) {
+    public PlaceBetInteractor(PlaceBetUserDataAccessInterface userDataAccessObject,
+                             PlaceBetOutputBoundary presenter) {
         this.userDataAccessObject = userDataAccessObject;
+        this.presenter = presenter;
     }
 
     public void execute(int betAmount) {
@@ -23,6 +26,10 @@ public class PlaceBetInteractor {
         // deduct bet from balance
         account.subtractFunds(betAmount);
         userDataAccessObject.save(account);
+
+        // notify presenter to update view model
+        PlaceBetOutputData outputData = new PlaceBetOutputData(account.getBalance());
+        presenter.prepareSuccessView(outputData);
     }
 }
 

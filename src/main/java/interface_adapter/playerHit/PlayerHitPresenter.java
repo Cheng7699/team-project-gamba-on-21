@@ -53,8 +53,17 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
                     payoutController.execute(payoutInputData);
                 }
             }
-        } else if (dealerHand.isBust()) { 
-            view.showRoundResult("You Won!"); 
+        } else if (dealerHand.isBust()) {
+            // dealer busts: game over, player wins
+            if (game != null) {
+                game.playerWin();
+                view.showRoundResult("You Won!");
+                // process payout for win
+                if (payoutController != null) {
+                    PayoutInputData payoutInputData = new PayoutInputData(game);
+                    payoutController.execute(payoutInputData);
+                }
+            }
         }
     }
 }

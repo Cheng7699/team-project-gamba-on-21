@@ -57,7 +57,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private ActionListener standActionListener;
     private ActionListener splitActionListener;
     private ActionListener gameStartActionListener;
-    private ActionListener placeBetActionListener;
+    private interface_adapter.placeBet.PlaceBetController placeBetController;
 
     public BlackjackView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
         this.loggedInViewModel = loggedInViewModel;
@@ -275,8 +275,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             game.setBetAmount(selectedBet);
         }
 
-        if (placeBetActionListener != null) {
-            placeBetActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "placeBet"));
+        // refactoring: call controller execute from view layer (clean architecture)
+        if (placeBetController != null) {
+            placeBetController.execute(selectedBet);
         }
 
         startRound();
@@ -498,8 +499,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.gameStartActionListener = gameStartActionListener;
     }
 
-    public void setPlaceBetActionListener(ActionListener placeBetActionListener) {
-        this.placeBetActionListener = placeBetActionListener;
+    // refactoring: setter for place bet controller (clean architecture - controller called from view)
+    public void setPlaceBetController(interface_adapter.placeBet.PlaceBetController placeBetController) {
+        this.placeBetController = placeBetController;
     }
 
 
