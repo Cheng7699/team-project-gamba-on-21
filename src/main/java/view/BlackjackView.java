@@ -39,6 +39,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private final JButton hitButton = new JButton("Hit");
     private final JButton standButton = new JButton("Stand");
     private final JButton splitButton = new JButton("Split");
+    private final JButton doubleDownButton = new JButton("Double Down");
     private final JButton rulesButton = new JButton("Rules");
     private final JButton quitButton = new JButton("Quit");
     private final JButton placeBetButton = new JButton("Place Bet");
@@ -55,6 +56,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private ActionListener hitActionListener;
     private ActionListener standActionListener;
     private ActionListener splitActionListener;
+    private ActionListener doubleDownActionListener;
     private ActionListener gameStartActionListener;
     private interface_adapter.placeBet.PlaceBetController placeBetController;
 
@@ -81,11 +83,36 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         infoPanel.add(new JLabel("Current Bet:"));
         infoPanel.add(betValueLabel);
 
+    // Left side panel with bet controls and centered action buttons
+        final JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BorderLayout());
+
+    // Bet controls at the top
         final JPanel betPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         betPanel.add(new JLabel("Adjust Bet:"));
         betPanel.add(betSpinner);
         betPanel.add(placeBetButton);
+        betPanel.add(newRoundButton);
+        leftPanel.add(betPanel, BorderLayout.NORTH);
 
+    // split and double down buttons centered
+        final JPanel actionButtonsPanel = new JPanel();
+        actionButtonsPanel.setLayout(new BoxLayout(actionButtonsPanel, BoxLayout.Y_AXIS));
+
+        splitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        doubleDownButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        actionButtonsPanel.add(Box.createVerticalGlue());
+        actionButtonsPanel.add(splitButton);
+        actionButtonsPanel.add(Box.createVerticalStrut(8));
+        actionButtonsPanel.add(doubleDownButton);
+        actionButtonsPanel.add(Box.createVerticalGlue());
+
+        leftPanel.add(actionButtonsPanel, BorderLayout.CENTER);
+
+        add(leftPanel, BorderLayout.WEST);
+
+        // Hand panel with dealer and player hands
         final JPanel handPanel = new JPanel();
         handPanel.setLayout(new GridLayout(2, 1, 8, 8));
         handPanel.setBorder(BorderFactory.createTitledBorder("Hands"));
@@ -101,12 +128,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         centerPanel.add(handPanel);
         centerPanel.add(Box.createVerticalGlue());
         add(centerPanel, BorderLayout.CENTER);
-        add(betPanel, BorderLayout.WEST);
 
-        final JPanel controlsPanel = new JPanel(new GridLayout(1, 5, 8, 0));
+        final JPanel controlsPanel = new JPanel(new GridLayout(1, 4, 8, 0));
         controlsPanel.add(hitButton);
         controlsPanel.add(standButton);
-        controlsPanel.add(splitButton);
         controlsPanel.add(rulesButton);
         controlsPanel.add(quitButton);
 
@@ -123,6 +148,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         hitButton.addActionListener(this);
         standButton.addActionListener(this);
         splitButton.addActionListener(this);
+        doubleDownButton.addActionListener(this);
         rulesButton.addActionListener(this);
         quitButton.addActionListener(this);
         placeBetButton.addActionListener(this);
@@ -139,6 +165,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
+        doubleDownButton.setEnabled(false);
+        newRoundButton.setEnabled(false);
 
         final LoggedInState initialState = loggedInViewModel.getState();
         if (initialState != null) {
@@ -171,6 +199,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         else if (source.equals(splitButton)) {
             playerSplits();
         }
+        else if (source.equals(doubleDownButton)) {
+            playerDoubleDowns();
+        }
     }
 
     @Override
@@ -178,6 +209,11 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         if ("state".equals(evt.getPropertyName()) || "balance".equals(evt.getPropertyName())) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             updateBalance(state);
+            // Update button states when balance changes
+            if (roundActive) {
+                updateSplitButtonState();
+                updateDoubleDownButtonState();
+            }
         }
     }
 
@@ -192,6 +228,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     // updates the balance display to show balance after bet deduction
     private void updateBalanceDisplay() {
         if (!betLocked) {
+            // Before bet is locked, show preview: balance - spinner value
             int betAmount = (Integer) betSpinner.getValue();
             int balanceAfterBet = actualBalance - betAmount;
             balanceValueLabel.setText("$" + balanceAfterBet);
@@ -203,7 +240,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
                 balanceValueLabel.setForeground(Color.BLACK);
             }
         } else {
-            // when bet is locked, show actual balance (which includes winnings/losses after game ends)
+            // When bet is locked, show actual balance which already reflects all deductions
+            // actualBalance is updated by PlaceBetInteractor (deducts initial bet) and
+            // PlayerDoubleDownInteractor (deducts additional bet on double down)
+            // So it already shows: startBalance - initialBet - doubleDownBet (if applicable)
             balanceValueLabel.setText("$" + actualBalance);
             balanceValueLabel.setForeground(Color.BLACK);
         }
@@ -266,7 +306,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         
         // show actual balance after bet is placed
         updateBalanceDisplay();
-        
+
         // set bet amount in game
         if (game != null) {
             game.setBetAmount(selectedBet);
@@ -286,6 +326,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
         splitButton.setEnabled(true);
+        updateSplitButtonState(); // Enable/disable based on conditions
+        updateDoubleDownButtonState(); // Enable/disable based on conditions
         playingSplitHand = false;
         splitHand = null;
 
@@ -301,6 +343,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
+        doubleDownButton.setEnabled(false);
         
         // reset bet spinner to 0 after game finishes
 
@@ -365,11 +408,26 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         }
     }
 
+    private void playerDoubleDowns() {
+        if (!roundActive) {
+            statusLabel.setText("Start a round by placing a bet first.");
+            return;
+        }
+
+        statusLabel.setText("Double down chosen. Processing...");
+        if (doubleDownActionListener != null) {
+            boolean isInSplitHand = game != null && game.isSplitted() && playingSplitHand;
+            ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, isInSplitHand ? "doubleDownSplit" : "doubleDown");
+            doubleDownActionListener.actionPerformed(event);
+        }
+    }
+
     private void endRound(String message) {
         roundActive = false;
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
+        doubleDownButton.setEnabled(false);
         updateHandLabels(false);
         
         // reset bet spinner to 0 after game finishes
@@ -453,6 +511,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.dealerHand = dealerHand;
         this.hideDealerHoleCard = hideDealerHoleCard;
         updateHandLabels(hideDealerHoleCard);
+        updateSplitButtonState(); // Update button state when hands change
+        updateDoubleDownButtonState(); // Update button state when hands change
     }
 
     public void setHands(Hand playerHand, Hand splitHand, Hand dealerHand, boolean hideDealerHoleCard) {
@@ -461,6 +521,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.dealerHand = dealerHand;
         this.hideDealerHoleCard = hideDealerHoleCard;
         updateHandLabels(hideDealerHoleCard);
+        updateSplitButtonState(); // Update button state when hands change
+        updateDoubleDownButtonState(); // Update button state when hands change
     }
 
     public Hand getDealerHand() { return dealerHand; }
@@ -489,6 +551,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.splitActionListener = splitActionListener;
     }
 
+    public void setDoubleDownActionListener(ActionListener doubleDownActionListener) {
+        this.doubleDownActionListener = doubleDownActionListener;
+    }
+
     public void setGameStartActionListener(ActionListener gameStartActionListener) {
         this.gameStartActionListener = gameStartActionListener;
     }
@@ -512,9 +578,128 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             playingSplitHand = true;
             showStatusMessage("First hand finished. Playing split hand now.");
             updateHandLabels(hideDealerHoleCard);
-            updateBalance(loggedInViewModel.getState());
-            updateBalanceDisplay();
+            // Update button states for split hand
+            updateSplitButtonState(); // Split is disabled after splitting
+            updateDoubleDownButtonState();
         }
+    }
+
+    /**
+     * Updates the bet display to show the current bet amount.
+     * This is called when the bet is placed or doubled down.
+     * @param betAmount the new bet amount to display (includes double down if applicable)
+     */
+    public void updateBetDisplay(int betAmount) {
+        betValueLabel.setText("$" + betAmount);
+        // Update balance display to reflect the new bet amount
+        updateBalanceDisplay();
+    }
+
+    /**
+     * Disables all player action buttons (Hit, Stand, Split, Double Down).
+     * Called after double down to prevent further actions on that hand.
+     */
+    public void disablePlayerActions() {
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
+        splitButton.setEnabled(false);
+        doubleDownButton.setEnabled(false);
+    }
+
+    /**
+     * Updates the Split button state based on game conditions.
+     * Split is only enabled when:
+     * - Round is active
+     * - Player has exactly 2 cards in current hand
+     * - Both cards have the same value (hand is splittable)
+     * - Player has enough balance to place another bet of the same amount
+     * - Hand hasn't been split yet
+     */
+    public void updateSplitButtonState() {
+        if (!roundActive || game == null) {
+            splitButton.setEnabled(false);
+            return;
+        }
+
+        // Can't split if already split
+        if (game.isSplitted()) {
+            splitButton.setEnabled(false);
+            return;
+        }
+
+        // Get current hand (only first hand can be split)
+        if (game.getPlayer().getHands().isEmpty()) {
+            splitButton.setEnabled(false);
+            return;
+        }
+
+        Hand currentHand = game.getPlayer().getHands().get(0);
+
+        // Check if hand is splittable (exactly 2 cards with same value)
+        boolean isSplittable = currentHand != null && currentHand.splittable();
+
+        // Check if player has enough balance to place another bet of the same amount
+        int currentBet = (int) game.getBetAmount();
+        boolean hasEnoughBalance = actualBalance >= currentBet;
+
+        // Enable only if both conditions are met
+        splitButton.setEnabled(isSplittable && hasEnoughBalance);
+    }
+
+    /**
+     * Updates the Double Down button state based on game conditions.
+     * 
+     * Double Down is clickable when:
+     * - Round is active
+     * - Player has exactly 2 cards in current hand (hasn't hit yet)
+     * - Player has enough balance to double the current bet
+     * 
+     * It becomes disabled after:
+     * - Player hits (now has more than 2 cards)
+     * - Player stands or splits
+     * - Game ends
+     */
+    public void updateDoubleDownButtonState() {
+        if (!roundActive || game == null) {
+            doubleDownButton.setEnabled(false);
+            return;
+        }
+
+        // Get current hand
+        Hand currentHand;
+        if (game.isSplitted() && playingSplitHand) {
+            if (game.getPlayer().getHands().size() > 1) {
+                currentHand = game.getPlayer().getHands().get(1);
+            } else {
+                doubleDownButton.setEnabled(false);
+                return;
+            }
+        } else {
+            if (!game.getPlayer().getHands().isEmpty()) {
+                currentHand = game.getPlayer().getHands().get(0);
+            } else {
+                doubleDownButton.setEnabled(false);
+                return;
+            }
+        }
+
+        // Check if hand has exactly 2 cards (double down requirement)
+        boolean hasExactlyTwoCards = currentHand != null && currentHand.getCards().size() == 2;
+
+        // Check if player has enough balance to double the bet
+        int currentBet = (int) game.getBetAmount();
+        boolean hasEnoughBalance = actualBalance >= currentBet;
+
+        // Enable only if both conditions are met
+        doubleDownButton.setEnabled(hasExactlyTwoCards && hasEnoughBalance);
+    }
+
+    /**
+     * Gets the stand action listener (used by presenter to trigger stand after double down).
+     * @return the stand action listener
+     */
+    public ActionListener getStandActionListener() {
+        return standActionListener;
     }
     
     public JSpinner getBetSpinner() { return this.betSpinner; }
