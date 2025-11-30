@@ -24,7 +24,13 @@ public class PlayerStandPresenter implements PlayerStandOutputBoundary {
     public void present(PlayerStandOutputData outputData) {
 
         BlackjackGame game = outputData.getGame();
-        view.setHands(game.getPlayer().getHands().get(0), game.getDealer().getHand(), true);
+        if (game.isSplitted() && game.getPlayer().getHands().size() > 1) {
+            view.setHands(game.getPlayer().getHands().get(0), game.getPlayer().getHands().get(1),
+                    game.getDealer().getHand(), true);
+        }
+        else {
+            view.setHands(game.getPlayer().getHands().get(0), game.getDealer().getHand(), true);
+        }
         view.setGame(game);
         view.showDealerCard();
 

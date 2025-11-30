@@ -21,7 +21,7 @@ public class PlayerHitInteractor implements PlayerHitInputBoundary{
         Card newCard = deck.drawCard();
         currentHand.addCard(newCard);
 
-        PlayerHitOutputData outputData = new PlayerHitOutputData(currentHand);
+        PlayerHitOutputData outputData = new PlayerHitOutputData(currentHand, inputData.isInSplittedHand());
         presenter.present(outputData);
     }
 

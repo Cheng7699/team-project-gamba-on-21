@@ -29,6 +29,7 @@ public class BlackjackGame {
     public String getResult() { return result; }
     public boolean isSplitted() { return isSplitted; }
     public void resetSplit() { this.isSplitted = false; }
+    public void setSplitted(boolean splitted) { this.isSplitted = splitted; }
 
     public void setDeckID(String deckID) { this.deckID = deckID; }
     public void setBetAmount(float betAmount) { this.betAmount = betAmount; }

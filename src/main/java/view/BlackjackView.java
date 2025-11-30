@@ -38,6 +38,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private final JButton hitButton = new JButton("Hit");
     private final JButton standButton = new JButton("Stand");
+    private final JButton splitButton = new JButton("Split");
     private final JButton rulesButton = new JButton("Rules");
     private final JButton quitButton = new JButton("Quit");
     private final JButton placeBetButton = new JButton("Place Bet");
@@ -45,13 +46,16 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private BlackjackGame game;
     private Hand playerHand = new Hand("");
+    private Hand splitHand;
     private Hand dealerHand = new Hand("");
     private boolean hideDealerHoleCard;
     private boolean betLocked;
     private boolean roundActive;
+    private boolean playingSplitHand;
 
     private ActionListener hitActionListener;
     private ActionListener standActionListener;
+    private ActionListener splitActionListener;
     private ActionListener gameStartActionListener;
     private ActionListener placeBetActionListener;
 
@@ -101,9 +105,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         add(centerPanel, BorderLayout.CENTER);
         add(betPanel, BorderLayout.WEST);
 
-        final JPanel controlsPanel = new JPanel(new GridLayout(1, 4, 8, 0));
+        final JPanel controlsPanel = new JPanel(new GridLayout(1, 5, 8, 0));
         controlsPanel.add(hitButton);
         controlsPanel.add(standButton);
+        controlsPanel.add(splitButton);
         controlsPanel.add(rulesButton);
         controlsPanel.add(quitButton);
 
@@ -119,6 +124,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         hitButton.addActionListener(this);
         standButton.addActionListener(this);
+        splitButton.addActionListener(this);
         rulesButton.addActionListener(this);
         quitButton.addActionListener(this);
         placeBetButton.addActionListener(this);
@@ -135,6 +141,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+        splitButton.setEnabled(false);
         newRoundButton.setEnabled(false);
 
         final LoggedInState initialState = loggedInViewModel.getState();
@@ -166,6 +173,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         }
         else if (source.equals(standButton)) {
             playerStands();
+        }
+        else if (source.equals(splitButton)) {
+            playerSplits();
         }
     }
 
@@ -277,7 +287,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         roundActive = true;
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
+        splitButton.setEnabled(true);
         newRoundButton.setEnabled(false);
+        playingSplitHand = false;
+        splitHand = null;
 
         updateHandLabels(hideDealerHoleCard);
         statusLabel.setText("Bet locked. Your round has started!");
@@ -291,6 +304,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         newRoundButton.setEnabled(false);
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+        splitButton.setEnabled(false);
         
         // reset bet spinner to 0 after game finishes
         betSpinner.setValue(0);
@@ -302,8 +316,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         updateBalanceDisplay();
         
         playerHand = null;
+        splitHand = null;
         dealerHand = null;
         hideDealerHoleCard = false;
+        playingSplitHand = false;
 
         playerHandLabel.setText("Player: -");
         dealerHandLabel.setText("Dealer: -");
@@ -319,7 +335,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         statusLabel.setText("Hit chosen. Waiting for result...");
         if (hitActionListener != null) {
-            hitActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "hit"));
+            boolean isInSplitHand = game != null && game.isSplitted() && playingSplitHand;
+            ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, isInSplitHand ? "hitSplit" : "hit");
+            hitActionListener.actionPerformed(event);
         }
     }
 
@@ -329,9 +347,25 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             return;
         }
 
+        if (game != null && game.isSplitted() && !playingSplitHand) {
+            advanceToSplitHand();
+            return;
+        }
+
         statusLabel.setText("Stand chosen. Waiting for dealer...");
         if (standActionListener != null) {
             standActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "stand"));
+        }
+    }
+
+    private void playerSplits() {
+        if (!roundActive) {
+            statusLabel.setText("Start a round by placing a bet first.");
+            return;
+        }
+
+        if (splitActionListener != null) {
+            splitActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "split"));
         }
     }
 
@@ -339,6 +373,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         roundActive = false;
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+        splitButton.setEnabled(false);
         newRoundButton.setEnabled(true);
         updateHandLabels(false);
         
@@ -360,7 +395,16 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private void updateHandLabels(boolean hideDealerHoleCard) {
         dealerHandLabel.setText(formatHandLabel("Dealer", dealerHand, hideDealerHoleCard));
-        playerHandLabel.setText(formatHandLabel("Player", playerHand, false));
+        if (splitHand != null) {
+            String playerHandsHtml = "<html>" +
+                    formatHandLabel("Player Hand 1", playerHand, false) +
+                    "<br/>" +
+                    formatHandLabel("Player Hand 2", splitHand, false) +
+                    "</html>";
+            playerHandLabel.setText(playerHandsHtml);
+        } else {
+            playerHandLabel.setText(formatHandLabel("Player", playerHand, false));
+        }
     }
 
     private String formatHandLabel(String owner, Hand hand, boolean hideHoleCard) {
@@ -410,13 +454,25 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
      */
     public void setHands(Hand playerHand, Hand dealerHand, boolean hideDealerHoleCard) {
         this.playerHand = playerHand;
+        this.splitHand = null;
+        this.dealerHand = dealerHand;
+        this.hideDealerHoleCard = hideDealerHoleCard;
+        updateHandLabels(hideDealerHoleCard);
+    }
+
+    public void setHands(Hand playerHand, Hand splitHand, Hand dealerHand, boolean hideDealerHoleCard) {
+        this.playerHand = playerHand;
+        this.splitHand = splitHand;
         this.dealerHand = dealerHand;
         this.hideDealerHoleCard = hideDealerHoleCard;
         updateHandLabels(hideDealerHoleCard);
     }
 
     public Hand getDealerHand() { return dealerHand; }
+    public Hand getPlayerHand() { return playerHand; }
+    public Hand getSplitHand() { return splitHand; }
     public boolean isHideDealerHoleCard() { return hideDealerHoleCard; }
+    public boolean isPlayingSplitHand() { return playingSplitHand; }
 
     /**
      * Update the UI to reflect the end-of-round state after entity logic completes.
@@ -434,6 +490,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.standActionListener = standActionListener;
     }
 
+    public void setSplitActionListener(ActionListener splitActionListener) {
+        this.splitActionListener = splitActionListener;
+    }
+
     public void setGameStartActionListener(ActionListener gameStartActionListener) {
         this.gameStartActionListener = gameStartActionListener;
     }
@@ -444,8 +504,20 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
 
     public void setGame(BlackjackGame game) { this.game = game; }
-    
+
     public BlackjackGame getGame() { return this.game; }
+
+    public void showStatusMessage(String message) {
+        statusLabel.setText(message);
+    }
+
+    public void advanceToSplitHand() {
+        if (splitHand != null) {
+            playingSplitHand = true;
+            showStatusMessage("First hand finished. Playing split hand now.");
+            updateHandLabels(hideDealerHoleCard);
+        }
+    }
     
     public JSpinner getBetSpinner() { return this.betSpinner; }
 }
