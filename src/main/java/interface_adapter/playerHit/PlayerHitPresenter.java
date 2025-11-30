@@ -1,6 +1,5 @@
 package interface_adapter.playerHit;
 
-import entity.BlackjackGame;
 import entity.Hand;
 import interface_adapter.payout.PayoutController;
 import use_case.playerHit.PlayerHitOutputBoundary;
@@ -27,6 +26,7 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand playerHand = outputData.getHandAfterHit();
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
+        boolean isBust = outputData.isBust();
 
         if (outputData.isSplitHand()) {
             view.setHands(view.getPlayerHand(), playerHand, dealerHand, isHideFirstCard);
@@ -35,26 +35,19 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
             view.setHands(playerHand, view.getSplitHand(), dealerHand, isHideFirstCard);
         }
 
-        BlackjackGame game = view.getGame();
-
-        if (playerHand.isBust()) {
+        if (isBust) {
             // player busts: game over, player loses
-            if (game != null && game.isSplitted() && !outputData.isSplitHand()) {
+            if (view.getGame().isSplitted() && !outputData.isSplitHand()) {
                 view.advanceToSplitHand();
                 return;
             }
 
-            if (game != null) {
-                game.playerLose();
-                view.showRoundResult("You Busted!");
-                // process payout for loss
-                if (payoutController != null) {
-                    PayoutInputData payoutInputData = new PayoutInputData(game);
-                    payoutController.execute(payoutInputData);
+            view.showRoundResult("You Busted!");
+            // process payout for loss
+            if (payoutController != null) {
+                PayoutInputData payoutInputData = new PayoutInputData(view.getGame());
+                payoutController.execute(payoutInputData);
                 }
             }
-        } else if (dealerHand.isBust()) { 
-            view.showRoundResult("You Won!"); 
-        }
     }
 }
