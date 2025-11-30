@@ -1,6 +1,5 @@
 package interface_adapter.playerHit;
 
-import entity.BlackjackGame;
 import entity.Hand;
 import interface_adapter.payout.PayoutController;
 import use_case.playerHit.PlayerHitOutputBoundary;
@@ -27,43 +26,30 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand playerHand = outputData.getHandAfterHit();
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
+        boolean isBust = outputData.isBust();
+        boolean isSplitHand = outputData.isSplitHand();
 
-        if (outputData.isSplitHand()) {
+        if (isSplitHand) {
             view.setHands(view.getPlayerHand(), playerHand, dealerHand, isHideFirstCard);
         }
         else {
             view.setHands(playerHand, view.getSplitHand(), dealerHand, isHideFirstCard);
         }
 
-        BlackjackGame game = view.getGame();
-
-        if (playerHand.isBust()) {
+        if (isBust) {
             // player busts: game over, player loses
-            if (game != null && game.isSplitted() && !outputData.isSplitHand()) {
+            if (view.getGame().isSplitted() && !isSplitHand) {
                 view.advanceToSplitHand();
                 return;
             }
 
-            if (game != null) {
-                game.playerLose();
-                view.showRoundResult("You Busted!");
-                // process payout for loss
-                if (payoutController != null) {
-                    PayoutInputData payoutInputData = new PayoutInputData(game);
-                    payoutController.execute(payoutInputData);
+            view.showRoundResult("You Busted!");
+
+            // process payout for loss
+            if (payoutController != null) {
+                PayoutInputData payoutInputData = new PayoutInputData(view.getGame());
+                payoutController.execute(payoutInputData);
                 }
             }
-        } else if (dealerHand.isBust()) {
-            // dealer busts: game over, player wins
-            if (game != null) {
-                game.playerWin();
-                view.showRoundResult("You Won!");
-                // process payout for win
-                if (payoutController != null) {
-                    PayoutInputData payoutInputData = new PayoutInputData(game);
-                    payoutController.execute(payoutInputData);
-                }
-            }
-        }
     }
 }

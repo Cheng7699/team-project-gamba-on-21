@@ -313,7 +313,7 @@ public class AppBuilder {
 
         PlayerHitPresenter presenter = new PlayerHitPresenter(blackjackView);
 
-        PlayerHitInputBoundary interactor = new PlayerHitInteractor(deckAccess, presenter);
+        PlayerHitInputBoundary interactor = new PlayerHitInteractor(deckAccess, presenter, blackjackGame);
 
         PlayerHitController controller = new PlayerHitController(interactor);
 
