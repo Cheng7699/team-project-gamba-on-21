@@ -1,6 +1,5 @@
 package interface_adapter.playerHit;
 
-import entity.BlackjackGame;
 import entity.Hand;
 import interface_adapter.payout.PayoutController;
 import use_case.playerHit.PlayerHitOutputBoundary;
@@ -27,24 +26,18 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand playerHand = outputData.getHandAfterHit();
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
+        boolean isBust = outputData.isBust();
 
         view.setHands(playerHand, dealerHand, isHideFirstCard);
-
-        BlackjackGame game = view.getGame();
         
-        if (playerHand.isBust()) {
+        if (isBust) {
             // player busts: game over, player loses
-            if (game != null) {
-                game.playerLose();
                 view.showRoundResult("You Busted!");
                 // process payout for loss
                 if (payoutController != null) {
-                    PayoutInputData payoutInputData = new PayoutInputData(game);
+                    PayoutInputData payoutInputData = new PayoutInputData(view.getGame());
                     payoutController.execute(payoutInputData);
                 }
             }
-        } else if (dealerHand.isBust()) { 
-            view.showRoundResult("You Won!"); 
-        }
     }
 }
