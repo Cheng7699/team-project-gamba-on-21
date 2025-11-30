@@ -104,35 +104,80 @@ public class PlayerStandInteractor implements PlayerStandInputBoundary {
         boolean dealerHasBlackjack = dealerTotal == 21 && dealerHand.getCards().size() == 2;
 
         // check for blackjack first (21 with exactly 2 cards)
+        // both have blackjack: push
         if (playerHasBlackjack && dealerHasBlackjack) {
-            // both have blackjack: push
-            game.push();
+
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.push();
+            }
+            else {
+                game.splitPlayerPush();
+            }
+
+        // player has blackjack, dealer doesn't: player wins
         } else if (playerHasBlackjack) {
-            // player has blackjack, dealer doesn't: player wins
-            game.playerWin();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.playerWin();
+            }
+            else {
+                game.splitPlayerWin();
+            }
+
+        // dealer has blackjack, player doesn't: player loses
         } else if (dealerHasBlackjack) {
-            // dealer has blackjack, player doesn't: player loses
-            game.playerLose();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.playerLose();
+            }
+            else {
+                game.splitPlayerLose();
+            }
         }
         // if dealer busts, player wins
         else if (dealerHand.isBust()) {
             game.playerWin();
+            game.splitPlayerWin();
         }
+
         // if player busts (shouldn't happen if they stood, but check anyway), player loses
         else if (playerHand.isBust()) {
-            game.playerLose();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.playerLose();
+            }
+            else {
+                game.splitPlayerLose();
+            }
         }
+
         // if player's hand is higher than dealer's, player wins
         else if (playerTotal > dealerTotal) {
-            game.playerWin();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.playerWin();
+            }
+            else {
+                game.splitPlayerWin();
+            }
         }
+
+
         // if dealer's hand is higher than player's, player loses
         else if (dealerTotal > playerTotal) {
-            game.playerLose();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.playerLose();
+            }
+            else {
+                game.splitPlayerLose();
+            }
         }
+
+
         // if they're equal, it's a push (tie)
         else {
-            game.push();
+            if (!game.isSplitted() || !game.getState().equals("InGame")) {
+                game.push();
+            }
+            else {
+                game.splitPlayerPush();
+            }
         }
     }
 }

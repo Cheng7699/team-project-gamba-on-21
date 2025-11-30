@@ -47,34 +47,51 @@ public class PayoutInteractor {
                 // Using integer division to ensure correct 3:2 payout
                 // For $100 bet: $100 * 3 / 2 = $150 winnings
                 payoutAmount = (betAmount * 3) / 2;
-                // Return stake + winnings: currentBalance + betAmount (stake) + payoutAmount (winnings)
-                newBalance = currentBalance + betAmount + payoutAmount;
             } else {
-                // regular win pays 1:1 (includes wins after double down)
-                // bet was already deducted (original bet + additional bet for double down = final bet)
-                // For 1:1 payout: return stake + winnings equal to stake
-                // Total to add: 2 * betAmount (stake return + winnings)
-                // Net profit: betAmount
-                payoutAmount = betAmount; // net profit for 1:1 win
-                // Return stake + winnings: currentBalance + betAmount (stake) + betAmount (winnings)
-                newBalance = currentBalance + betAmount + betAmount;
+                // regular win pays 1:1 (bet was already deducted, so add back bet + bet)
+                payoutAmount = betAmount;
             }
         } else if (result.equals("PlayerLose")) {
-            // loss: bet was already deducted (original + additional for double down = final bet)
-            // no change to balance (bet stays deducted)
-            payoutAmount = -betAmount; // negative indicates loss
-            newBalance = currentBalance;
+            // loss: bet was already deducted when placed, so no change
+            payoutAmount = -betAmount;
         } else if (result.equals("Push")) {
             // push: return bet (bet was deducted, so add it back)
             // for double down, this returns the final bet amount
-            payoutAmount = 0; // no profit/loss on push
-            newBalance = currentBalance + betAmount; // return stake only
+            payoutAmount = 0;
         } else {
             // game still in progress or unknown result
             payoutAmount = 0;
-            newBalance = currentBalance;
         }
 
+        if (game.isSplitted()) {
+            String secondResult = game.getSecondResult();
+            if (secondResult.equals("PlayerWin")) {
+                if (playerHasBlackjack && !dealerHasBlackjack) {
+                    // blackjack pays 3:2
+                    // for every $2 bet, you win $3
+                    // example: bet $100 -> win $150, total return $250 (bet $100 + winnings $150)
+                    // bet was already deducted, so add back bet + 1.5x bet winnings
+                    // Using integer division to ensure correct 3:2 payout
+                    // For $100 bet: $100 * 3 / 2 = $150 winnings
+                    payoutAmount += (betAmount * 3) / 2;
+
+                } else {
+                    // regular win pays 1:1 (bet was already deducted, so add back bet + bet)
+                    payoutAmount += betAmount;
+                }
+            } else if (secondResult.equals("PlayerLose")) {
+                // loss: bet was already deducted when placed, so no change
+                payoutAmount -= betAmount;
+            } else if (secondResult.equals("Push")) {
+                // push: return bet (bet was deducted, so add it back)
+                payoutAmount += 0;
+            } else {
+                // game still in progress or unknown result
+                payoutAmount += 0;
+            }
+        }
+
+        newBalance = currentBalance + betAmount + payoutAmount;
         // update account balance
         account.setBalance(newBalance);
         userDataAccessObject.save(account);
