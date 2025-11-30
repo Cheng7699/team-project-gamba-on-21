@@ -201,6 +201,11 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         betSpinner.setEnabled(false);
         placeBetButton.setEnabled(false);
         betValueLabel.setText("$" + selectedBet);
+        
+        // set bet amount in game
+        if (game != null) {
+            game.setBetAmount(selectedBet);
+        }
 
         if (placeBetActionListener != null) {
             placeBetActionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "placeBet"));
@@ -358,4 +363,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
 
     public void setGame(BlackjackGame game) { this.game = game; }
+    
+    public BlackjackGame getGame() { return this.game; }
+    
+    public JSpinner getBetSpinner() { return this.betSpinner; }
 }

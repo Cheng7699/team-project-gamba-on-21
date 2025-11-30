@@ -6,6 +6,9 @@ import data_access.PlayerHitDataAccess;
 import entity.*;
 import interface_adapter.PlayerStand.PlayerStandController;
 import interface_adapter.PlayerStand.PlayerStandPresenter;
+import interface_adapter.payout.PayoutController;
+import interface_adapter.payout.PayoutPresenter;
+import interface_adapter.placeBet.PlaceBetController;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.game_start.GameStartController;
 import interface_adapter.game_start.GameStartPresenter;
@@ -14,6 +17,7 @@ import interface_adapter.launch.LaunchPresenter;
 import interface_adapter.launch.LaunchViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
+import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -48,6 +52,9 @@ import use_case.playerHit.PlayerHitInputBoundary;
 import use_case.playerHit.PlayerHitInteractor;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitUserDataAccessInterface;
+import use_case.payout.PayoutInteractor;
+import use_case.payout.PayoutOutputBoundary;
+import use_case.placeBet.PlaceBetInteractor;
 import use_case.playerStand.PlayerStandInputBoundary;
 import use_case.playerStand.PlayerStandInteractor;
 import use_case.playerStand.PlayerStandOutputBoundary;
@@ -243,6 +250,24 @@ public class AppBuilder {
         blackjackView.setGameStartActionListener(e -> {
             controller.gameStart(blackjackGame);
         });
+        
+        // wire up place bet use case to deduct bet from balance
+        PlaceBetInteractor placeBetInteractor = new PlaceBetInteractor(userDataAccessObject);
+        PlaceBetController placeBetController = new PlaceBetController(placeBetInteractor);
+        blackjackView.setPlaceBetActionListener(e -> {
+            // get bet amount from view and deduct it
+            int betAmount = (Integer) blackjackView.getBetSpinner().getValue();
+            placeBetController.execute(betAmount);
+            // update balance in view model (interactor already updated the account)
+            Accounts account = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
+            if (account != null) {
+                LoggedInState state = loggedInViewModel.getState();
+                state.setBalance(account.getBalance());
+                loggedInViewModel.setState(state);
+                loggedInViewModel.firePropertyChange("balance");
+            }
+        });
+        
         return this;
     }
 
@@ -250,7 +275,7 @@ public class AppBuilder {
 
         PlayerStandUserDataAccessInterface apiClient = new DeckApiClient();
 
-        PlayerStandOutputBoundary presenter = new PlayerStandPresenter(blackjackView);
+        PlayerStandPresenter presenter = new PlayerStandPresenter(blackjackView);
 
         PlayerStandInputBoundary interactor = new PlayerStandInteractor(blackjackGame, apiClient, presenter);
 
@@ -259,6 +284,13 @@ public class AppBuilder {
         blackjackView.setStandActionListener(e -> {
             controller.stand(blackjackGame);
         });
+
+        // wire up payout use case
+        PayoutOutputBoundary payoutPresenter = new PayoutPresenter(loggedInViewModel);
+        PayoutInteractor payoutInteractor = new PayoutInteractor(userDataAccessObject, payoutPresenter);
+        PayoutController payoutController = new PayoutController(payoutInteractor);
+        presenter.setPayoutController(payoutController);
+
         return this;
     }
 
@@ -267,7 +299,7 @@ public class AppBuilder {
 
         PlayerHitUserDataAccessInterface deckAccess = new PlayerHitDataAccess(deckApiClient, blackjackGame);
 
-        PlayerHitOutputBoundary presenter = new PlayerHitPresenter(blackjackView);
+        PlayerHitPresenter presenter = new PlayerHitPresenter(blackjackView);
 
         PlayerHitInputBoundary interactor = new PlayerHitInteractor(deckAccess, presenter);
 
@@ -276,6 +308,13 @@ public class AppBuilder {
         blackjackView.setHitActionListener(e -> {
             controller.hit(blackjackGame.getPlayer(), false);
         });
+
+        // wire up payout use case for bust handling
+        PayoutOutputBoundary payoutPresenter = new PayoutPresenter(loggedInViewModel);
+        PayoutInteractor payoutInteractor = new PayoutInteractor(userDataAccessObject, payoutPresenter);
+        PayoutController payoutController = new PayoutController(payoutInteractor);
+        presenter.setPayoutController(payoutController);
+
         return this;
     }
 
