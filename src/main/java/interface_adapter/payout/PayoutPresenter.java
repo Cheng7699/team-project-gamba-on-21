@@ -21,6 +21,8 @@ public class PayoutPresenter implements PayoutOutputBoundary {
         LoggedInState state = loggedInViewModel.getState();
         state.setBalance(outputData.getNewBalance());
         loggedInViewModel.setState(state);
+        // fire both "state" and "balance" property changes to ensure UI updates
+        loggedInViewModel.firePropertyChange();
         loggedInViewModel.firePropertyChange("balance");
     }
 }

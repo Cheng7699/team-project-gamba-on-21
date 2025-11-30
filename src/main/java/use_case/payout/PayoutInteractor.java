@@ -38,8 +38,13 @@ public class PayoutInteractor {
         int newBalance;
         if (result.equals("PlayerWin")) {
             if (playerHasBlackjack && !dealerHasBlackjack) {
-                // blackjack pays 3:2 (bet was already deducted, so add back bet + 1.5x bet)
-                payoutAmount = (int) (betAmount * 1.5);
+                // blackjack pays 3:2
+                // for every $2 bet, you win $3
+                // example: bet $100 -> win $150, total return $250 (bet $100 + winnings $150)
+                // bet was already deducted, so add back bet + 1.5x bet winnings
+                // Using integer division to ensure correct 3:2 payout
+                // For $100 bet: $100 * 3 / 2 = $150 winnings
+                payoutAmount = (betAmount * 3) / 2;
                 newBalance = currentBalance + betAmount + payoutAmount;
             } else {
                 // regular win pays 1:1 (bet was already deducted, so add back bet + bet)
