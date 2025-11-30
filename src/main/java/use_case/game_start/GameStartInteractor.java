@@ -31,12 +31,6 @@ public class GameStartInteractor implements GameStartInputBoundary {
             catch (IOException e) {
                 presenter.presentFailView("Error while shuffling deck");
             }
-            game.getDealer().getHand().reset();
-            game.getPlayer().getHands().get(0).reset();
-            if (game.isSplitted()) {
-                game.getPlayer().getHands().get(1).reset();
-                game.resetSplit();
-            }
         }
 
         else{
@@ -48,6 +42,10 @@ public class GameStartInteractor implements GameStartInputBoundary {
                 game.setDeckID("error in deck creation");
             }
         }
+
+        // Clear any previous hands (including stale split hands) before starting a new round
+        game.getPlayer().getHands().clear();
+        game.resetSplit();
 
 
         Card[] dealerCards = null;

@@ -77,6 +77,8 @@ public class PlayerStandInteractor implements PlayerStandInputBoundary {
         // create output data
         PlayerStandOutputData outputData = new PlayerStandOutputData(game);
         presenter.present(outputData);
+        
+        // note: payout is handled by the presenter after game ends
     }
 
     private Hand getCurrentHand() {
@@ -98,9 +100,22 @@ public class PlayerStandInteractor implements PlayerStandInputBoundary {
     private void determineWinner(BlackjackGame game, Hand playerHand, Hand dealerHand) {
         int playerTotal = playerHand.getHandTotalNumber();
         int dealerTotal = dealerHand.getHandTotalNumber();
+        boolean playerHasBlackjack = playerTotal == 21 && playerHand.getCards().size() == 2;
+        boolean dealerHasBlackjack = dealerTotal == 21 && dealerHand.getCards().size() == 2;
 
+        // check for blackjack first (21 with exactly 2 cards)
+        if (playerHasBlackjack && dealerHasBlackjack) {
+            // both have blackjack: push
+            game.push();
+        } else if (playerHasBlackjack) {
+            // player has blackjack, dealer doesn't: player wins
+            game.playerWin();
+        } else if (dealerHasBlackjack) {
+            // dealer has blackjack, player doesn't: player loses
+            game.playerLose();
+        }
         // if dealer busts, player wins
-        if (dealerHand.isBust()) {
+        else if (dealerHand.isBust()) {
             game.playerWin();
         }
         // if player busts (shouldn't happen if they stood, but check anyway), player loses

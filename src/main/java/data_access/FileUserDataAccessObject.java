@@ -5,6 +5,8 @@ import entity.AccountFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
+import use_case.payout.PayoutUserDataAccessInterface;
+import use_case.placeBet.PlaceBetUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.topup.TopupUserDataAccessInterface;
 
@@ -19,7 +21,10 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                                                  LoginUserDataAccessInterface,
                                                  ChangePasswordUserDataAccessInterface,
-                                                 LogoutUserDataAccessInterface, TopupUserDataAccessInterface {
+                                                 LogoutUserDataAccessInterface, 
+                                                 TopupUserDataAccessInterface,
+                                                 PayoutUserDataAccessInterface,
+                                                 PlaceBetUserDataAccessInterface {
 
     private static final String HEADER = "username,password,balance";
 

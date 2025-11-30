@@ -21,7 +21,9 @@ public class Main {
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
                 .addGameStartUseCase()
+                .addPlayerSplitUseCase()
                 .addPlayerHitUseCase()
+                .addPlayerDoubleDownUseCase()
                 .addPlayerStandUseCase()
                 .build();
 

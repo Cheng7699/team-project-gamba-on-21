@@ -1,16 +1,23 @@
 package interface_adapter.playerHit;
 
 import entity.Hand;
+import interface_adapter.payout.PayoutController;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitOutputData;
+import use_case.payout.PayoutInputData;
 import view.BlackjackView;
 
 public class PlayerHitPresenter implements PlayerHitOutputBoundary {
 
     private BlackjackView view;
+    private PayoutController payoutController;
 
     public PlayerHitPresenter(BlackjackView view) {
         this.view = view;
+    }
+
+    public void setPayoutController(PayoutController payoutController) {
+        this.payoutController = payoutController;
     }
 
     @Override
@@ -19,10 +26,30 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand playerHand = outputData.getHandAfterHit();
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
+        boolean isBust = outputData.isBust();
+        boolean isSplitHand = outputData.isSplitHand();
 
-        view.setHands(playerHand, dealerHand, isHideFirstCard);
+        if (isSplitHand) {
+            view.setHands(view.getPlayerHand(), playerHand, dealerHand, isHideFirstCard);
+        }
+        else {
+            view.setHands(playerHand, view.getSplitHand(), dealerHand, isHideFirstCard);
+        }
 
-        if (playerHand.isBust()) { view.showRoundResult("You Busted!"); }
-        else if (dealerHand.isBust()) { view.showRoundResult("You Won!"); }
+        if (isBust) {
+            // player busts: game over, player loses
+            if (view.getGame().isSplitted() && !isSplitHand) {
+                view.advanceToSplitHand();
+                return;
+            }
+
+            view.showRoundResult("You Busted!");
+
+            // process payout for loss
+            if (payoutController != null) {
+                PayoutInputData payoutInputData = new PayoutInputData(view.getGame());
+                payoutController.execute(payoutInputData);
+                }
+            }
     }
 }

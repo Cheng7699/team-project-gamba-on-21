@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import use_case.game_start.GameStartDataAccessInterface;
+import use_case.playerSplit.PlayerSplitDataAccessInterface;
 import use_case.playerStand.PlayerStandUserDataAccessInterface;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.io.IOException;
  Also, the piles are part of the deck itself!!
  */
 public class DeckApiClient implements GameStartDataAccessInterface,
-        PlayerStandUserDataAccessInterface {
+        PlayerStandUserDataAccessInterface, PlayerSplitDataAccessInterface {
 
     private final OkHttpClient client = new OkHttpClient();
     private static final String API_URL = "https://deckofcardsapi.com/api/";
