@@ -27,8 +27,9 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
         boolean isBust = outputData.isBust();
+        boolean isSplitHand = outputData.isSplitHand();
 
-        if (outputData.isSplitHand()) {
+        if (isSplitHand) {
             view.setHands(view.getPlayerHand(), playerHand, dealerHand, isHideFirstCard);
         }
         else {
@@ -37,12 +38,13 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
 
         if (isBust) {
             // player busts: game over, player loses
-            if (view.getGame().isSplitted() && !outputData.isSplitHand()) {
+            if (view.getGame().isSplitted() && !isSplitHand) {
                 view.advanceToSplitHand();
                 return;
             }
 
             view.showRoundResult("You Busted!");
+
             // process payout for loss
             if (payoutController != null) {
                 PayoutInputData payoutInputData = new PayoutInputData(view.getGame());

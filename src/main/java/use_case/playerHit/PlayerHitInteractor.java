@@ -33,18 +33,23 @@ public class PlayerHitInteractor implements PlayerHitInputBoundary{
         // Check if the hand is bust or not.
         boolean isBust = currentHand.isBust();
 
-        // If the hand is bust, we set the game result to player loses.
-        if (isBust) {
-            game.playerLose();
-        }
-
         // Checkout if the player is in split hand or not.
         boolean isSplit = inputData.isInSplittedHand();
+
+        // If the hand busts and game is not split, or if the split hand busts, we set the game result to player loses.
+        if (isBust) {
+            if (!game.isSplitted() || isSplit) {
+                game.playerLose();
+            }
+        }
 
         PlayerHitOutputData outputData = new PlayerHitOutputData(currentHand, isSplit, isBust);
         presenter.present(outputData);
     }
 
+    /**
+     * It is a helper function to determine whether the player is in split hand or not.
+     */
     private Hand getCurrentHand(PlayerHitInputData inputData) {
         BlackjackPlayer player = inputData.getBlackjackPlayer();
         if (inputData.isInSplittedHand()) {
