@@ -38,8 +38,11 @@ public class PlayerHitInteractor implements PlayerHitInputBoundary{
 
         // If the hand busts and game is not split, or if the split hand busts, we set the game result to player loses.
         if (isBust) {
-            if (!game.isSplitted() || isSplit) {
+            if (!game.isSplitted()) {
                 game.playerLose();
+            }
+            else if (isSplit) {
+                game.splitPlayerLose();
             }
         }
 

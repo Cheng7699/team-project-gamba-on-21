@@ -9,6 +9,7 @@ public class BlackjackGame {
     private float betAmount;
     private float odds;
     private String result;
+    private String secondResult = "";
 
     public BlackjackGame(String deckID, BlackjackDealer dealer, BlackjackPlayer player) {
         this.deckID = deckID;
@@ -25,11 +26,13 @@ public class BlackjackGame {
     public BlackjackDealer getDealer() { return dealer; }
     public BlackjackPlayer getPlayer() { return player; }
     public float getBetAmount() { return betAmount; }
+    public String getSecondResult() { return secondResult; }
     public float getOdds() { return odds; }
     public String getResult() { return result; }
     public boolean isSplitted() { return isSplitted; }
     public void resetSplit() { this.isSplitted = false; }
     public void setSplitted(boolean splitted) { this.isSplitted = splitted; }
+
 
     public void setDeckID(String deckID) { this.deckID = deckID; }
     public void setBetAmount(float betAmount) { this.betAmount = betAmount; }
@@ -53,5 +56,18 @@ public class BlackjackGame {
     public void playerLose() {
         this.gameOver();
         result = "PlayerLose";
+    }
+
+
+    public void splitPlayerWin() {
+        secondResult = "PlayerWin";
+    }
+
+    public void splitPlayerPush() {
+        secondResult = "Push";
+    }
+
+    public void splitPlayerLose() {
+        secondResult = "PlayerLose";
     }
 }
