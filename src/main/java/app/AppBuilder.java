@@ -26,6 +26,8 @@ import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.playerHit.PlayerHitController;
 import interface_adapter.playerHit.PlayerHitPresenter;
+import interface_adapter.playerSplit.PlayerSplitController;
+import interface_adapter.playerSplit.PlayerSplitPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -52,6 +54,10 @@ import use_case.playerHit.PlayerHitInputBoundary;
 import use_case.playerHit.PlayerHitInteractor;
 import use_case.playerHit.PlayerHitOutputBoundary;
 import use_case.playerHit.PlayerHitUserDataAccessInterface;
+import use_case.playerSplit.PlayerSplitDataAccessInterface;
+import use_case.playerSplit.PlayerSplitInputBoundary;
+import use_case.playerSplit.PlayerSplitInteractor;
+import use_case.playerSplit.PlayerSplitOutputBoundary;
 import use_case.payout.PayoutInteractor;
 import use_case.payout.PayoutOutputBoundary;
 import use_case.placeBet.PlaceBetInteractor;
@@ -294,6 +300,21 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addPlayerSplitUseCase() {
+
+        PlayerSplitDataAccessInterface deckAccess = new DeckApiClient();
+
+        PlayerSplitOutputBoundary presenter = new PlayerSplitPresenter(blackjackView);
+
+        PlayerSplitInputBoundary interactor = new PlayerSplitInteractor(blackjackGame, deckAccess, presenter);
+
+        PlayerSplitController controller = new PlayerSplitController(interactor);
+
+        blackjackView.setSplitActionListener(e -> controller.split(blackjackGame));
+
+        return this;
+    }
+
 
     public AppBuilder addPlayerHitUseCase() {
 
@@ -306,7 +327,8 @@ public class AppBuilder {
         PlayerHitController controller = new PlayerHitController(interactor);
 
         blackjackView.setHitActionListener(e -> {
-            controller.hit(blackjackGame.getPlayer(), false);
+            boolean isSplitHand = "hitSplit".equals(e.getActionCommand());
+            controller.hit(blackjackGame.getPlayer(), isSplitHand);
         });
 
         // wire up payout use case for bust handling

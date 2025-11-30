@@ -28,12 +28,22 @@ public class PlayerHitPresenter implements PlayerHitOutputBoundary {
         Hand dealerHand = view.getDealerHand();
         boolean isHideFirstCard = view.isHideDealerHoleCard();
 
-        view.setHands(playerHand, dealerHand, isHideFirstCard);
+        if (outputData.isSplitHand()) {
+            view.setHands(view.getPlayerHand(), playerHand, dealerHand, isHideFirstCard);
+        }
+        else {
+            view.setHands(playerHand, view.getSplitHand(), dealerHand, isHideFirstCard);
+        }
 
         BlackjackGame game = view.getGame();
-        
+
         if (playerHand.isBust()) {
             // player busts: game over, player loses
+            if (game != null && game.isSplitted() && !outputData.isSplitHand()) {
+                view.advanceToSplitHand();
+                return;
+            }
+
             if (game != null) {
                 game.playerLose();
                 view.showRoundResult("You Busted!");
