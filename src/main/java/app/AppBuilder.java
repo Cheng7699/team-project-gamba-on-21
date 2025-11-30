@@ -61,6 +61,7 @@ import use_case.playerSplit.PlayerSplitOutputBoundary;
 import use_case.payout.PayoutInteractor;
 import use_case.payout.PayoutOutputBoundary;
 import use_case.placeBet.PlaceBetInteractor;
+import use_case.placeBet.PlaceBetOutputBoundary;
 import use_case.playerStand.PlayerStandInputBoundary;
 import use_case.playerStand.PlayerStandInteractor;
 import use_case.playerStand.PlayerStandOutputBoundary;
@@ -257,22 +258,12 @@ public class AppBuilder {
             controller.gameStart(blackjackGame);
         });
         
-        // wire up place bet use case to deduct bet from balance
-        PlaceBetInteractor placeBetInteractor = new PlaceBetInteractor(userDataAccessObject);
+        // refactoring: wire up place bet use case following clean architecture
+        // presenter updates view model, controller is called from view layer
+        PlaceBetOutputBoundary placeBetPresenter = new interface_adapter.placeBet.PlaceBetPresenter(loggedInViewModel);
+        PlaceBetInteractor placeBetInteractor = new PlaceBetInteractor(userDataAccessObject, placeBetPresenter);
         PlaceBetController placeBetController = new PlaceBetController(placeBetInteractor);
-        blackjackView.setPlaceBetActionListener(e -> {
-            // get bet amount from view and deduct it
-            int betAmount = (Integer) blackjackView.getBetSpinner().getValue();
-            placeBetController.execute(betAmount);
-            // update balance in view model (interactor already updated the account)
-            Accounts account = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
-            if (account != null) {
-                LoggedInState state = loggedInViewModel.getState();
-                state.setBalance(account.getBalance());
-                loggedInViewModel.setState(state);
-                loggedInViewModel.firePropertyChange("balance");
-            }
-        });
+        blackjackView.setPlaceBetController(placeBetController);
         
         return this;
     }
