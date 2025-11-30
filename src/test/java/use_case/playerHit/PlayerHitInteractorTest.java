@@ -56,6 +56,13 @@ public class PlayerHitInteractorTest {
         return player;
     }
 
+    private BlackjackGame createGame(BlackjackPlayer player) {
+
+        BlackjackDealer dealer = new BlackjackDealer();
+
+        return new BlackjackGame("TestDeck", dealer, player);
+    }
+
     @Test
     void testAddNumberCardToPlayerWithOneHand() {
 
@@ -64,10 +71,12 @@ public class PlayerHitInteractorTest {
         Card card = new Card("0H", "TestUrl", "10", "HEARTS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        BlackjackGame game = createGame(player);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
         PlayerHitInputData inputData = new PlayerHitInputData(player, false);
 
         assertFalse(hand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -75,6 +84,8 @@ public class PlayerHitInteractorTest {
         assertTrue(presenter.presentCalled);
         assertSame(hand, presenter.outputData.getHandAfterHit());
         assertTrue(hand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -85,10 +96,12 @@ public class PlayerHitInteractorTest {
         Card card = new Card("QD", "TestUrl", "QUEEN", "DIAMONDS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        BlackjackGame game = createGame(player);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
         PlayerHitInputData inputData = new PlayerHitInputData(player, false);
 
         assertFalse(hand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -96,6 +109,8 @@ public class PlayerHitInteractorTest {
         assertTrue(presenter.presentCalled);
         assertSame(hand, presenter.outputData.getHandAfterHit());
         assertTrue(hand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -107,12 +122,14 @@ public class PlayerHitInteractorTest {
         Card card = new Card("AH", "TestUrl", "ACE", "HEARTS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player, false);
 
         assertFalse(hand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -120,6 +137,8 @@ public class PlayerHitInteractorTest {
         assertTrue(presenter.presentCalled);
         assertSame(hand, presenter.outputData.getHandAfterHit());
         assertTrue(hand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -132,13 +151,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("6H", "TestUrl", "6", "HEARTS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,false);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -147,6 +168,8 @@ public class PlayerHitInteractorTest {
         assertSame(firstHand, presenter.outputData.getHandAfterHit());
         assertTrue(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -159,13 +182,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("KS", "TestUrl", "KING", "SPADES");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,false);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -174,6 +199,8 @@ public class PlayerHitInteractorTest {
         assertSame(firstHand, presenter.outputData.getHandAfterHit());
         assertTrue(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -186,13 +213,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("AS", "TestUrl", "ACE", "SPADES");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,false);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -201,6 +230,8 @@ public class PlayerHitInteractorTest {
         assertSame(firstHand, presenter.outputData.getHandAfterHit());
         assertTrue(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -213,13 +244,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("3H", "TestUrl", "3", "HEARTS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,true);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -228,6 +261,8 @@ public class PlayerHitInteractorTest {
         assertSame(secondHand, presenter.outputData.getHandAfterHit());
         assertTrue(secondHand.getCards().contains(card));
         assertFalse(firstHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -240,13 +275,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("JS", "TestUrl", "JACK", "SPADES");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,true);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -255,6 +292,8 @@ public class PlayerHitInteractorTest {
         assertSame(secondHand, presenter.outputData.getHandAfterHit());
         assertTrue(secondHand.getCards().contains(card));
         assertFalse(firstHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
     }
 
     @Test
@@ -267,13 +306,15 @@ public class PlayerHitInteractorTest {
         Card card = new Card("AC", "TestUrl", "ACE", "CLUBS");
         MockDeck deck = new MockDeck(card);
         MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
 
-        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter);
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
 
         PlayerHitInputData inputData = new PlayerHitInputData(player,true);
 
         assertFalse(firstHand.getCards().contains(card));
         assertFalse(secondHand.getCards().contains(card));
+        assertEquals("InGame", game.getResult());
 
         interactor.execute(inputData);
 
@@ -282,5 +323,44 @@ public class PlayerHitInteractorTest {
         assertSame(secondHand, presenter.outputData.getHandAfterHit());
         assertTrue(secondHand.getCards().contains(card));
         assertFalse(firstHand.getCards().contains(card));
+        assertFalse(presenter.outputData.isBust());
+        assertEquals("InGame", game.getResult());
+    }
+
+    @Test
+    void testPlayerBustUpdatesGameAndPresenter() {
+
+        BlackjackPlayer player = initiatePlayerWithOneHand();
+        Hand hand = player.getHands().get(0);
+
+        Card cardKingDiamonds = new Card("KD", "TestUrl", "KING", "DIAMONDS");
+        Card cardQueenHearts = new Card("QH", "TestUrl", "QUEEN", "HEARTS");
+        Card cardTwoClubs = new Card("2H", "TestUrl", "2", "CLUBS");
+
+        MockDeck deck = new MockDeck(cardTwoClubs);
+        MockPresenter presenter = new MockPresenter();
+        BlackjackGame game = createGame(player);
+
+        PlayerHitInteractor interactor = new PlayerHitInteractor(deck, presenter, game);
+
+        PlayerHitInputData inputData = new PlayerHitInputData(player, false);
+
+        assertEquals("InGame", game.getResult());
+
+        hand.addCard(cardKingDiamonds);
+        hand.addCard(cardQueenHearts);
+
+        assertEquals(20, hand.getHandTotalNumber());
+        assertFalse(hand.isBust());
+
+        interactor.execute(inputData);
+
+        assertTrue(deck.drawCalled);
+        assertTrue(presenter.presentCalled);
+        assertSame(hand, presenter.outputData.getHandAfterHit());
+        assertTrue(hand.getCards().contains(cardTwoClubs));
+        assertTrue(hand.isBust());
+        assertTrue(presenter.outputData.isBust());
+        assertEquals("PlayerLose", game.getResult());
     }
 }
