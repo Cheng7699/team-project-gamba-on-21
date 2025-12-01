@@ -24,6 +24,13 @@ public class GameStartInteractor implements GameStartInputBoundary {
     public void execute(GameStartInputData inputData) {
         BlackjackGame game = inputData.getGame();
 
+        // Reset game result and state at the start of every new round so that
+        // use cases like Double Down see the game as \"in progress\" again.
+        // Without this, result may still be PlayerWin/PlayerLose/Push from the
+        // previous round, causing validations to think the game is over.
+        game.setResult("InGame");
+        game.toPlayerTurn();
+
         // If the bet is 0, do nothing
         if (inputData.getBetAmount() == 0) {
             presenter.present(new GameStartOutputData(game, inputData.getBetAmount()));
