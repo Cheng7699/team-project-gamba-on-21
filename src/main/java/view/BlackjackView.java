@@ -569,14 +569,14 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             try {
                 if (owner.equals("dealer") && hideDealerHoleCard && i == 0) {
                     BufferedImage img = ImageIO.read(new URL("https://deckofcardsapi.com/static/img/back.png"));
-                    Integer newW = 150;
+                    Integer newW = 130;
                     Integer newH = img.getHeight()*newW/img.getWidth();
                     JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
                     panel.add(imageLabel);
                 }
                 else {
                     BufferedImage img = ImageIO.read(new URL(card.getImageUrl()));
-                    Integer newW = 150;
+                    Integer newW = 130;
                     Integer newH = img.getHeight()*newW/img.getWidth();
                     JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
                     panel.add(imageLabel);
