@@ -250,19 +250,17 @@ public class AppBuilder {
     public AppBuilder addGameStartUseCase() {
         GameStartDataAccessInterface apiClient = new DeckApiClient();
 
-        GameStartOutputBoundary presenter = new GameStartPresenter(blackjackView);
+        GameStartOutputBoundary presenter = new GameStartPresenter(loggedInViewModel, viewManagerModel);
 
         blackjackGame = new BlackjackGame("",
                 new BlackjackDealer(),
                 new BlackjackPlayer(loggedInViewModel.getState().getUsername()));
-
-        GameStartInputBoundary interactor = new GameStartInteractor(blackjackGame, apiClient, presenter);
+        loggedInViewModel.getState().setGame(blackjackGame);
+        final GameStartInputBoundary interactor = new GameStartInteractor(apiClient, presenter);
 
         GameStartController controller = new GameStartController(interactor);
+        blackjackView.setGameStartController(controller);
 
-        blackjackView.setGameStartActionListener(e -> {
-            controller.gameStart(blackjackGame, (Integer) blackjackView.getBetSpinner().getValue());
-        });
         
         // refactoring: wire up place bet use case following clean architecture
         // presenter updates view model, controller is called from view layer

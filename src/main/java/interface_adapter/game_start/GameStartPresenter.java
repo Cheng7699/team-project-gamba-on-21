@@ -1,23 +1,30 @@
 package interface_adapter.game_start;
 
 import entity.BlackjackGame;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInState;
+import interface_adapter.logged_in.LoggedInViewModel;
 import use_case.game_start.GameStartOutputBoundary;
 import use_case.game_start.GameStartOutputData;
 import view.BlackjackView;
 
 public class GameStartPresenter implements GameStartOutputBoundary {
 
-    private final BlackjackView view;
+    private final LoggedInViewModel loggedInViewModel;
+    private final ViewManagerModel viewManagerModel;
 
-    public GameStartPresenter(BlackjackView view) { this.view = view; }
+    public GameStartPresenter(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
+        this.loggedInViewModel = loggedInViewModel;
+        this.viewManagerModel = viewManagerModel;
+    }
 
+    @Override
     public void present(GameStartOutputData outputData) {
-        BlackjackGame game = outputData.getGame();
-        if (outputData.getBetAmount() == 0) return;
-        view.setGame(game);
-        view.setHands(game.getPlayer().getHands().get(0), game.getDealer().getHand(), true);
-        view.updateSplitButtonState();
-        view.updateDoubleDownButtonState();
+        final LoggedInState loggedInState = loggedInViewModel.getState();
+        loggedInState.setGame(outputData.getGame());
+        this.loggedInViewModel.setState(loggedInState);
+        this.loggedInViewModel.firePropertyChange();
+
     }
 
     public void presentFailView(String message) {

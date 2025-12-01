@@ -10,12 +10,10 @@ import java.io.IOException;
 
 public class GameStartInteractor implements GameStartInputBoundary {
 
-    private final BlackjackGame game;
     private final GameStartOutputBoundary presenter;
     private final GameStartDataAccessInterface apiClient;
 
-    public GameStartInteractor(BlackjackGame game, GameStartDataAccessInterface apiClient, GameStartOutputBoundary presenter) {
-        this.game = game;
+    public GameStartInteractor(GameStartDataAccessInterface apiClient, GameStartOutputBoundary presenter) {
         this.presenter = presenter;
         this.apiClient = apiClient;
     }
@@ -35,6 +33,7 @@ public class GameStartInteractor implements GameStartInputBoundary {
         if (inputData.getBetAmount() == 0) {
             presenter.present(new GameStartOutputData(game, inputData.getBetAmount()));
         }
+
         // If a deck already exists, just shuffle it.
         if (!game.getDeckID().isEmpty()) {
             try {
@@ -45,6 +44,7 @@ public class GameStartInteractor implements GameStartInputBoundary {
             }
         }
 
+        // Otherwise, create a new deck
         else{
             try {
                 String gameDeck = apiClient.createDeck(true, false);
@@ -60,8 +60,11 @@ public class GameStartInteractor implements GameStartInputBoundary {
         game.resetSplit();
 
 
+        // Create the Arrays of cards for the dealer and the player
         Card[] dealerCards = null;
         Card[] playerCards;
+
+        //Draw 2 cards for each (the player and the dealer)
         try {
             dealerCards = apiClient.drawCards(game.getDeckID(), 2);
             playerCards = apiClient.drawCards(game.getDeckID(), 2);
@@ -71,20 +74,22 @@ public class GameStartInteractor implements GameStartInputBoundary {
             return;
         }
 
+        // Store the drawn cards to piles in the API
         try{
             apiClient.addCards(game.getDeckID(), "dealerHand", dealerCards);
             apiClient.addCards(game.getDeckID(), "playerHand1", playerCards);
-
         }
         catch (IOException e) {
             presenter.presentFailView("error in adding cards to hands");
         }
 
+        // Create new hand objects in the BlackJackGame and give their respective cards.
         game.getDealer().setHand(new Hand("dealerHand"));
         game.getDealer().getHand().addCards(dealerCards);
         game.getPlayer().addHand(new Hand("playerHand1"));
         game.getPlayer().getHands().get(0).addCards(playerCards);
 
+        // Pass the output data (the BlackJackGame and the bet amount) to the presenter
         presenter.present(new GameStartOutputData(game, inputData.getBetAmount()));
 
 
