@@ -7,4 +7,8 @@ public class ReadRuleOutputData {
     public ReadRuleOutputData(String text) {
         this.text = text;
     }
+
+    public String getText() {
+        return text;
+    }
 }

@@ -147,6 +147,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private void navigateTo(String viewName) {
         viewManagerModel.setState(viewName);
+        viewManagerModel.setPreviousState(this.viewName);
         viewManagerModel.firePropertyChange();
     }
 

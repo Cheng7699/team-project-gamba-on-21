@@ -169,11 +169,11 @@ public class AppBuilder {
         return this;
     }
 
-//    public AppBuilder addRulesView() {
-//        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
-//        cardPanel.add(rulesView, rulesView.getViewName());
-//        return this;
-//    }
+    public AppBuilder addRulesView() {
+        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
+        cardPanel.add(rulesView, rulesView.getViewName());
+        return this;
+    }
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -375,6 +375,4 @@ public class AppBuilder {
 
         return application;
     }
-
-
 }

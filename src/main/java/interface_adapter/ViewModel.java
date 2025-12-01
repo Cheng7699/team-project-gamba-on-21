@@ -14,12 +14,16 @@ public class ViewModel<T> {
 
     private final String viewName;
 
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private T state;
+    private T previousState;
 
     public ViewModel(String viewName) {
         this.viewName = viewName;
+        this.previousState = null;
     }
 
     public String getViewName() {
@@ -30,8 +34,16 @@ public class ViewModel<T> {
         return this.state;
     }
 
+    public T getPreviousState() {
+        return this.previousState;
+    }
+
     public void setState(T state) {
         this.state = state;
+    }
+
+    public void setPreviousState(T previousState) {
+        this.previousState = previousState;
     }
 
     /**

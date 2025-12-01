@@ -5,4 +5,5 @@ package use_case.readRule;
  */
 public interface ReadRuleOutputBoundary {
     void present(ReadRuleOutputData outputData);
+    void presentFailView(String message);
 }
