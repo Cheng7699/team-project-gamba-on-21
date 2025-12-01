@@ -272,6 +272,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private void navigateTo(String destinationView) {
         viewManagerModel.setState(destinationView);
+        viewManagerModel.setPreviousState(VIEW_NAME);
         viewManagerModel.firePropertyChange();
     }
 
