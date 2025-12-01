@@ -15,6 +15,8 @@ public class GameStartPresenter implements GameStartOutputBoundary {
         BlackjackGame game = outputData.getGame();
         view.setHands(game.getPlayer().getHands().get(0), game.getDealer().getHand(), true);
         view.setGame(game);
+        view.updateSplitButtonState();
+        view.updateDoubleDownButtonState();
     }
 
     public void presentFailView(String message) {

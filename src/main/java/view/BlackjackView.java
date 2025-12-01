@@ -298,10 +298,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         betSpinner.setEnabled(false);
         placeBetButton.setEnabled(false);
         hitButton.setEnabled(true);
-        standButton.setEnabled(true);
-        splitButton.setEnabled(false);
         betValueLabel.setText("$" + selectedBet);
-        
+
         // show actual balance after bet is placed
         updateBalanceDisplay();
 
@@ -321,9 +319,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private void startRound() {
 
         roundActive = true;
+        game.gameStart();
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
-        splitButton.setEnabled(false);
         updateSplitButtonState(); // Enable/disable based on conditions
         updateDoubleDownButtonState(); // Enable/disable based on conditions
         playingSplitHand = false;
@@ -341,6 +339,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
+
         
         // reset bet spinner to 0 after game finishes
 
