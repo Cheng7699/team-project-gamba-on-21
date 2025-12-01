@@ -92,7 +92,6 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         betPanel.add(new JLabel("Adjust Bet:"));
         betPanel.add(betSpinner);
         betPanel.add(placeBetButton);
-        betPanel.add(newRoundButton);
         leftPanel.add(betPanel, BorderLayout.NORTH);
 
     // split and double down buttons centered
@@ -166,7 +165,6 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
-        newRoundButton.setEnabled(false);
 
         final LoggedInState initialState = loggedInViewModel.getState();
         if (initialState != null) {
@@ -301,7 +299,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         placeBetButton.setEnabled(false);
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
-        splitButton.setEnabled(true);
+        splitButton.setEnabled(false);
         betValueLabel.setText("$" + selectedBet);
         
         // show actual balance after bet is placed
@@ -325,12 +323,11 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         roundActive = true;
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
-        splitButton.setEnabled(true);
+        splitButton.setEnabled(false);
         updateSplitButtonState(); // Enable/disable based on conditions
         updateDoubleDownButtonState(); // Enable/disable based on conditions
         playingSplitHand = false;
         splitHand = null;
-
         updateHandLabels(hideDealerHoleCard);
         statusLabel.setText("Bet locked. Your round has started!");
     }
@@ -636,7 +633,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         Hand currentHand = game.getPlayer().getHands().get(0);
 
         // Check if hand is splittable (exactly 2 cards with same value)
-        boolean isSplittable = currentHand != null && currentHand.splittable();
+        boolean isSplittable = (currentHand != null && currentHand.splittable());
 
         // Check if player has enough balance to place another bet of the same amount
         int currentBet = (int) game.getBetAmount();
