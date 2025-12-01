@@ -17,6 +17,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.StringJoiner;
+import java.net.URL;
 
 /**
  * The Blackjack game view. It provides controls for the key player actions and
@@ -288,6 +289,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             return;
         }
 
+
         final int selectedBet = (Integer) betSpinner.getValue();
         if (selectedBet <= 0) {
             statusLabel.setText("Please choose a bet greater than $0 to start.");
@@ -333,13 +335,13 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         roundActive = true;
         game.gameStart();
+
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
         updateSplitButtonState(); // Enable/disable based on conditions
         updateDoubleDownButtonState(); // Enable/disable based on conditions
         playingSplitHand = false;
         splitHand = null;
-        updateHandLabels(hideDealerHoleCard);
         statusLabel.setText("Bet locked. Your round has started!");
     }
 
@@ -369,7 +371,11 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         hideDealerHoleCard = false;
         playingSplitHand = false;
 
+        playerHandPanel.removeAll();
+        playerHandPanel.add(playerHandLabel);
         playerHandLabel.setText("Player: -");
+        dealerHandPanel.removeAll();
+        dealerHandPanel.add(dealerHandLabel);
         dealerHandLabel.setText("Dealer: -");
         statusLabel.setText("Place your bet to start playing.");
 
@@ -437,7 +443,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
-        updateHandLabels(false);
+
         
         // reset bet spinner to 0 after game finishes
         betSpinner.setValue(0);
@@ -455,8 +461,88 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         statusLabel.setText(message + " Click New Round to place another bet.");
     }
 
-
     private void updateHandLabels(boolean hideDealerHoleCard) {
+        dealerHandPanel.removeAll();
+        revalidate();
+        dealerHandPanel.add(dealerHandLabel);
+        dealerHandPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (game.getDealer().getHand() == null) return;
+        Hand hand = game.getDealer().getHand();
+        formatHandImages(dealerHandPanel, "dealer", hand, hideDealerHoleCard);
+
+
+        playerHandPanel.removeAll();
+        playerHandPanel.add(playerHandLabel);
+        playerHandPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (splitHand != null) {
+            JPanel verticalPanel = new JPanel();
+            verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+
+            playerHandPanel.add(verticalPanel);
+
+            JPanel playerHandPanel1 = new JPanel();
+            playerHandPanel1.setLayout(new BoxLayout(playerHandPanel1, BoxLayout.X_AXIS));
+            playerHandPanel1.setAlignmentX(Component.LEFT_ALIGNMENT);
+            JPanel playerHandPanel2 = new JPanel();
+            playerHandPanel2.setLayout(new BoxLayout(playerHandPanel2, BoxLayout.X_AXIS));
+            playerHandPanel2.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            verticalPanel.add(playerHandPanel1);
+            verticalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            verticalPanel.add(playerHandPanel2);
+
+            formatHandImages(playerHandPanel1, "player", playerHand, false);
+            formatHandImages(playerHandPanel2, "player", splitHand, false);
+
+        }
+        else {
+            playerHandPanel.setLayout(new BoxLayout(playerHandPanel, BoxLayout.X_AXIS));
+            formatHandImages(playerHandPanel, "player", playerHand, false);
+        }
+        playerHandPanel.revalidate();
+        playerHandPanel.repaint();
+        dealerHandPanel.revalidate();
+        dealerHandPanel.repaint();
+
+    }
+
+    public static BufferedImage resize(BufferedImage original, int newW, int newH) {
+        BufferedImage resized = new BufferedImage(newW, newH, original.getType());
+        Graphics2D g = resized.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(original, 0, 0, newW, newH, null);
+        g.dispose();
+        return resized;
+    }
+
+
+    private void formatHandImages(JPanel panel, String owner, Hand hand, boolean hideDealerHoleCard) {
+        for (int i=0; i<hand.getCards().size(); i++) {
+
+            Card card = hand.getCards().get(i);
+            panel.add(Box.createRigidArea(new Dimension(10, 0)));
+            try {
+                if (owner.equals("dealer") && hideDealerHoleCard && i == 0) {
+                    BufferedImage img = ImageIO.read(new URL("https://deckofcardsapi.com/static/img/back.png"));
+                    Integer newW = 150;
+                    Integer newH = img.getHeight()*newW/img.getWidth();
+                    panel.add(new JLabel(new ImageIcon(resize(img, newW, newH))));
+                }
+                else {
+                    BufferedImage img = ImageIO.read(new URL(card.getImageUrl()));
+                    Integer newW = 150;
+                    Integer newH = img.getHeight()*newW/img.getWidth();
+                    panel.add(new JLabel(new ImageIcon(resize(img, newW, newH))));
+                }
+            }
+            catch (IOException e) {
+                panel.add(new JLabel(card.getValue()+card.getSuit()));
+            }
+
+        }
+    }
+
+    private void updateHandLabelstxt(boolean hideDealerHoleCard) {
         dealerHandLabel.setText(formatHandLabel("Dealer", dealerHand, hideDealerHoleCard));
         if (splitHand != null) {
             String playerHandsHtml = "<html>" +
