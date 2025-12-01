@@ -43,6 +43,7 @@ public class BlackjackGame {
     public void toPlayerTurn() { state = "PlayerTurn"; }
     public void gameStart() { state = "InGame"; }
     public void gameOver() { state = "GameOver"; }
+    public void gameStart() { state = "InGame"; }
 
     public void playerWin() {
         this.gameOver();

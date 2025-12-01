@@ -132,10 +132,11 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
             return "Cannot double down on a bust hand.";
         }
 
-        // Check if game is already over
-        // Note: game.getState() can be null initially, so we check for both null and "GameOver"
-        String gameState = game.getState();
-        if (gameState != null && "GameOver".equals(gameState)) {
+        // Check if game result indicates game is over
+        // We check result instead of state because state might not be set correctly
+        String gameResult = game.getResult();
+        if (gameResult != null && !"InGame".equals(gameResult)) {
+            // Game has a result (PlayerWin, PlayerLose, Push) - game is over
             return "Cannot double down after game is over.";
         }
 

@@ -10,7 +10,7 @@ public class GameStartController {
 
     public GameStartController(GameStartInputBoundary interactor) { this.interactor = interactor; }
 
-    public void gameStart(BlackjackGame game) {
-        interactor.execute(new GameStartInputData(game));
+    public void gameStart(BlackjackGame game, Integer betAmount) {
+        interactor.execute(new GameStartInputData(game, betAmount));
     }
 }

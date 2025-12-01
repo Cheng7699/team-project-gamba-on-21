@@ -169,11 +169,11 @@ public class AppBuilder {
         return this;
     }
 
-//    public AppBuilder addRulesView() {
-//        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
-//        cardPanel.add(rulesView, rulesView.getViewName());
-//        return this;
-//    }
+    public AppBuilder addRulesView() {
+        rulesView = new RulesView(loggedInViewModel, viewManagerModel);
+        cardPanel.add(rulesView, rulesView.getViewName());
+        return this;
+    }
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -261,7 +261,7 @@ public class AppBuilder {
         GameStartController controller = new GameStartController(interactor);
 
         blackjackView.setGameStartActionListener(e -> {
-            controller.gameStart(blackjackGame);
+            controller.gameStart(blackjackGame, (Integer) blackjackView.getBetSpinner().getValue());
         });
         
         // refactoring: wire up place bet use case following clean architecture
@@ -375,6 +375,4 @@ public class AppBuilder {
 
         return application;
     }
-
-
 }
