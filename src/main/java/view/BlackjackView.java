@@ -92,7 +92,6 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         betPanel.add(new JLabel("Adjust Bet:"));
         betPanel.add(betSpinner);
         betPanel.add(placeBetButton);
-        betPanel.add(newRoundButton);
         leftPanel.add(betPanel, BorderLayout.NORTH);
 
     // split and double down buttons centered
@@ -166,7 +165,6 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
-        newRoundButton.setEnabled(false);
 
         final LoggedInState initialState = loggedInViewModel.getState();
         if (initialState != null) {
@@ -648,16 +646,16 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     /**
      * Updates the Double Down button state based on game conditions.
-     * 
-     * Double Down is clickable when:
+     * Double Down is enabled when:
      * - Round is active
      * - Player has exactly 2 cards in current hand (hasn't hit yet)
      * - Player has enough balance to double the current bet
-     * 
+     * - If game is split, only enabled on split hand (not first hand after splitting)
      * It becomes disabled after:
      * - Player hits (now has more than 2 cards)
-     * - Player stands or splits
+     * - Player splits and playing first hand (can only double down on split hand)
      * - Game ends
+     * - Insufficient balance
      */
     public void updateDoubleDownButtonState() {
         if (!roundActive || game == null) {
@@ -668,13 +666,19 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         // Get current hand
         Hand currentHand;
         if (game.isSplitted() && playingSplitHand) {
+            // Playing split hand - can double down if conditions are met
             if (game.getPlayer().getHands().size() > 1) {
                 currentHand = game.getPlayer().getHands().get(1);
             } else {
                 doubleDownButton.setEnabled(false);
                 return;
             }
+        } else if (game.isSplitted() && !playingSplitHand) {
+            // Game is split but playing first hand - disable double down after splitting
+            doubleDownButton.setEnabled(false);
+            return;
         } else {
+            // Not split - playing first hand
             if (!game.getPlayer().getHands().isEmpty()) {
                 currentHand = game.getPlayer().getHands().get(0);
             } else {
@@ -683,7 +687,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             }
         }
 
-        // Check if hand has exactly 2 cards (double down requirement)
+        // Check if hand has exactly 2 cards (double down requirement - disabled after hitting)
         boolean hasExactlyTwoCards = currentHand != null && currentHand.getCards().size() == 2;
 
         // Check if player has enough balance to double the bet
