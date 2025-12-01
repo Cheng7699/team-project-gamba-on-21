@@ -29,7 +29,6 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
         BlackjackPlayer player = inputData.getPlayer();
         boolean isInSplittedHand = inputData.isInSplittedHand();
 
-        // get the current hand (first hand or split hand)
         Hand currentHand = getCurrentHand(player, isInSplittedHand);
 
         // validate double down conditions
@@ -39,71 +38,35 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
             return;
         }
 
-        // get current bet amount
-        int currentBet = (int) game.getBetAmount();
-        int additionalBet = currentBet; // Double down means adding the same amount again
-
-        // check if player has sufficient balance
-        String username = userDataAccessObject.getCurrentUsername();
-        Accounts account = userDataAccessObject.get(username);
+        // validate and retrieve account
+        Accounts account = getAccount();
         if (account == null) {
-            presenter.presentFailView("Account not found.");
-            return;
+            return; // Error already presented
         }
 
-        int currentBalance = account.getBalance();
-        if (currentBalance < additionalBet) {
-            presenter.presentFailView("Insufficient funds to double down. Need $" + additionalBet + " but only have $" + currentBalance + ".");
-            return;
+        // validate sufficient balance
+        int currentBet = (int) game.getBetAmount();
+        int additionalBet = calculateAdditionalBet(currentBet);
+        if (!hasSufficientBalance(account, additionalBet)) {
+            return; // Error already presented
         }
 
-        // Deduct the additional bet from balance
-        account.subtractFunds(additionalBet);
-        userDataAccessObject.save(account);
-
-        // Double the bet amount in the game
-        int newBetAmount = currentBet * 2;
-        game.setBetAmount(newBetAmount);
-
-        // Deal exactly one card to the current hand
-        Card newCard;
-        try {
-            newCard = userDataAccessObject.drawCard();
-        } catch (Exception e) {
-            // If card draw fails, refund the bet and report error
-            account.addFunds(additionalBet);
-            userDataAccessObject.save(account);
-            game.setBetAmount(currentBet);
-            presenter.presentFailView("Problem drawing card for double down.");
-            return;
+        // process double down: deduct bet, double bet amount, deal card
+        DoubleDownResult result = processDoubleDown(game, account, currentBet, additionalBet, currentHand);
+        if (!result.isSuccess()) {
+            return; // Error already presented
         }
-        currentHand.addCard(newCard);
 
-        // Check if the hand is bust
-        boolean isBust = currentHand.isBust();
-
-        // Double down rules:
-        // 1. After double down, player receives exactly one card
-        // 2. Player's turn automatically ends (no more hits allowed)
-        // 3. If player busts, they lose immediately
-        // 4. If player doesn't bust, proceed to dealer's turn (via stand)
-        // 5. Payout uses the doubled bet amount
-        
-        // If bust and game is not split, or if split hand busts, set game result to player loses
-        if (isBust) {
-            if (!game.isSplitted() || isInSplittedHand) {
-                game.playerLose();
-            }
-        }
-        // Note: If not bust, the presenter will trigger stand to proceed to dealer's turn
-        // The payout will be calculated using the doubled bet amount when the game ends
+        // determine game outcome and create output
+        boolean isBust = result.getHand().isBust();
+        updateGameResultIfBust(game, isBust, isInSplittedHand);
 
         PlayerDoubleDownOutputData outputData = new PlayerDoubleDownOutputData(
                 game,
-                currentHand,
+                result.getHand(),
                 isInSplittedHand,
                 isBust,
-                newBetAmount,
+                result.getNewBetAmount(),
                 account.getBalance()
         );
         presenter.present(outputData);
@@ -158,6 +121,134 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
             return player.getHands().get(1);
         } else {
             return player.getHands().get(0);
+        }
+    }
+
+    /**
+     * Retrieves the account for the current user.
+     * @return the account, or null if not found (error already presented)
+     */
+    private Accounts getAccount() {
+        String username = userDataAccessObject.getCurrentUsername();
+        Accounts account = userDataAccessObject.get(username);
+        if (account == null) {
+            presenter.presentFailView("Account not found.");
+        }
+        return account;
+    }
+
+    /**
+     * Calculates the additional bet amount for double down.
+     * @param currentBet the current bet amount
+     * @return the additional bet (equal to current bet for double down)
+     */
+    private int calculateAdditionalBet(int currentBet) {
+        return currentBet; // Double down means adding the same amount again
+    }
+
+    /**
+     * Validates that the player has sufficient balance for double down.
+     * @param account the player's account
+     * @param additionalBet the additional bet amount required
+     * @return true if sufficient balance, false otherwise (error already presented)
+     */
+    private boolean hasSufficientBalance(Accounts account, int additionalBet) {
+        int currentBalance = account.getBalance();
+        if (currentBalance < additionalBet) {
+            presenter.presentFailView("Insufficient funds to double down. Need $" + additionalBet + " but only have $" + currentBalance + ".");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Result class to encapsulate the outcome of processing double down.
+     * Follows Single Responsibility Principle by separating result data.
+     */
+    private static class DoubleDownResult {
+        private final boolean success;
+        private final Hand hand;
+        private final int newBetAmount;
+
+        private DoubleDownResult(boolean success, Hand hand, int newBetAmount) {
+            this.success = success;
+            this.hand = hand;
+            this.newBetAmount = newBetAmount;
+        }
+
+        static DoubleDownResult success(Hand hand, int newBetAmount) {
+            return new DoubleDownResult(true, hand, newBetAmount);
+        }
+
+        static DoubleDownResult failure() {
+            return new DoubleDownResult(false, null, 0);
+        }
+
+        boolean isSuccess() { return success; }
+        Hand getHand() { return hand; }
+        int getNewBetAmount() { return newBetAmount; }
+    }
+
+    /**
+     * Processes the double down operation: deducts bet, doubles bet amount, and deals card.
+     * Follows Single Responsibility Principle by handling all double down processing logic.
+     * @param game the blackjack game
+     * @param account the player's account
+     * @param currentBet the current bet amount
+     * @param additionalBet the additional bet to deduct
+     * @param currentHand the current hand to add card to
+     * @return result containing the updated hand and new bet amount, or failure result
+     */
+    private DoubleDownResult processDoubleDown(BlackjackGame game, Accounts account, 
+                                               int currentBet, int additionalBet, Hand currentHand) {
+        // Deduct the additional bet from balance
+        account.subtractFunds(additionalBet);
+        userDataAccessObject.save(account);
+
+        // Double the bet amount in the game
+        int newBetAmount = currentBet * 2;
+        game.setBetAmount(newBetAmount);
+
+        // Deal exactly one card to the current hand
+        try {
+            Card newCard = userDataAccessObject.drawCard();
+            currentHand.addCard(newCard);
+            return DoubleDownResult.success(currentHand, newBetAmount);
+        } catch (Exception e) {
+            // If card draw fails, rollback: refund the bet and restore original bet amount
+            rollbackDoubleDown(account, additionalBet, game, currentBet);
+            presenter.presentFailView("Problem drawing card for double down.");
+            return DoubleDownResult.failure();
+        }
+    }
+
+    /**
+     * Rolls back a failed double down operation by refunding the bet and restoring the original bet amount.
+     * Follows Single Responsibility Principle by handling rollback logic separately.
+     * @param account the player's account
+     * @param additionalBet the additional bet to refund
+     * @param game the blackjack game
+     * @param originalBet the original bet amount to restore
+     */
+    private void rollbackDoubleDown(Accounts account, int additionalBet, BlackjackGame game, int originalBet) {
+        account.addFunds(additionalBet);
+        userDataAccessObject.save(account);
+        game.setBetAmount(originalBet);
+    }
+
+    /**
+     * Updates the game result if the hand is bust.
+     * Follows Single Responsibility Principle by handling game state updates separately.
+     * @param game the blackjack game
+     * @param isBust whether the hand is bust
+     * @param isInSplittedHand whether this is a split hand
+     */
+    private void updateGameResultIfBust(BlackjackGame game, boolean isBust, boolean isInSplittedHand) {
+        if (isBust) {
+            // If bust and game is not split, or if split hand busts, set game result to player loses
+            if (!game.isSplitted() || isInSplittedHand) {
+                game.playerLose();
+            }
         }
     }
 }
