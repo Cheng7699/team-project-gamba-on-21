@@ -23,6 +23,11 @@ public class GameStartInteractor implements GameStartInputBoundary {
     @Override
     public void execute(GameStartInputData inputData) {
         BlackjackGame game = inputData.getGame();
+
+        // If the bet is 0, do nothing
+        if (game.getBetAmount() == 0) {
+            presenter.present(new GameStartOutputData(game));
+        }
         // If a deck already exists, just shuffle it.
         if (!game.getDeckID().isEmpty()) {
             try {
