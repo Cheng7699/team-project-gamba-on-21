@@ -7,9 +7,13 @@ import entity.BlackjackGame;
  */
 public class ReadRuleInputData {
 
-    private BlackjackGame blackjackGame;
+    private final BlackjackGame blackjackGame;
 
     public ReadRuleInputData(BlackjackGame blackjackGame) {
         this.blackjackGame = blackjackGame;
+    }
+
+    public BlackjackGame getBlackjackGame() {
+        return blackjackGame;
     }
 }
