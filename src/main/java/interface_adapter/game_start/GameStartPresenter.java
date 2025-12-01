@@ -13,7 +13,7 @@ public class GameStartPresenter implements GameStartOutputBoundary {
 
     public void present(GameStartOutputData outputData) {
         BlackjackGame game = outputData.getGame();
-        if (game.getBetAmount() == 0) return;
+        if (outputData.getBetAmount() == 0) return;
         view.setHands(game.getPlayer().getHands().get(0), game.getDealer().getHand(), true);
         view.setGame(game);
         view.updateSplitButtonState();

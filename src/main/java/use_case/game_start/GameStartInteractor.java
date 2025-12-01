@@ -25,8 +25,8 @@ public class GameStartInteractor implements GameStartInputBoundary {
         BlackjackGame game = inputData.getGame();
 
         // If the bet is 0, do nothing
-        if (game.getBetAmount() == 0) {
-            presenter.present(new GameStartOutputData(game));
+        if (inputData.getBetAmount() == 0) {
+            presenter.present(new GameStartOutputData(game, inputData.getBetAmount()));
         }
         // If a deck already exists, just shuffle it.
         if (!game.getDeckID().isEmpty()) {
@@ -78,7 +78,7 @@ public class GameStartInteractor implements GameStartInputBoundary {
         game.getPlayer().addHand(new Hand("playerHand1"));
         game.getPlayer().getHands().get(0).addCards(playerCards);
 
-        presenter.present(new GameStartOutputData(game));
+        presenter.present(new GameStartOutputData(game, inputData.getBetAmount()));
 
 
     }

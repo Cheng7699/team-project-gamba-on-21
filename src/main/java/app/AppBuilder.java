@@ -261,7 +261,7 @@ public class AppBuilder {
         GameStartController controller = new GameStartController(interactor);
 
         blackjackView.setGameStartActionListener(e -> {
-            controller.gameStart(blackjackGame);
+            controller.gameStart(blackjackGame, (Integer) blackjackView.getBetSpinner().getValue());
         });
         
         // refactoring: wire up place bet use case following clean architecture

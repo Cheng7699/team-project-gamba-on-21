@@ -5,14 +5,17 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.StringJoiner;
 
 /**
@@ -35,6 +38,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
     private final JLabel dealerHandLabel = new JLabel("Dealer: -");
     private final JLabel playerHandLabel = new JLabel("Player: -");
+    private final JPanel dealerHandPanel = new JPanel();
+    private final JPanel playerHandPanel = new JPanel();
 
     private final JButton hitButton = new JButton("Hit");
     private final JButton standButton = new JButton("Stand");
@@ -117,8 +122,16 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         handPanel.setBorder(BorderFactory.createTitledBorder("Hands"));
         dealerHandLabel.setPreferredSize(new Dimension(400, dealerHandLabel.getPreferredSize().height));
         playerHandLabel.setPreferredSize(new Dimension(400, playerHandLabel.getPreferredSize().height));
-        handPanel.add(dealerHandLabel);
-        handPanel.add(playerHandLabel);
+
+        handPanel.add(dealerHandPanel);
+        dealerHandPanel.setLayout(new BoxLayout(dealerHandPanel, BoxLayout.X_AXIS));
+        dealerHandPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        dealerHandPanel.add(dealerHandLabel);
+
+        handPanel.add(playerHandPanel);
+        playerHandPanel.setLayout(new BoxLayout(playerHandPanel, BoxLayout.X_AXIS));
+        playerHandPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        playerHandPanel.add(playerHandLabel);
 
         final JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
@@ -441,6 +454,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         
         statusLabel.setText(message + " Click New Round to place another bet.");
     }
+
 
     private void updateHandLabels(boolean hideDealerHoleCard) {
         dealerHandLabel.setText(formatHandLabel("Dealer", dealerHand, hideDealerHoleCard));
