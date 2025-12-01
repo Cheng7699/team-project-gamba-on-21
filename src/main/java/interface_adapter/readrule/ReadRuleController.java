@@ -1,6 +1,5 @@
 package interface_adapter.readrule;
 
-import entity.BlackjackGame;
 import use_case.readRule.ReadRuleInputBoundary;
 import use_case.readRule.ReadRuleInputData;
 

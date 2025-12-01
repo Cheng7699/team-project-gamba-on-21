@@ -19,6 +19,8 @@ public class ReadRulePresenter implements ReadRuleOutputBoundary {
 
     @Override
     public void presentFailView(String message) {
-
+        System.out.println(message);
     }
+
+
 }
