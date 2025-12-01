@@ -50,6 +50,9 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private final JButton quitButton = new JButton("Quit");
     private final JButton placeBetButton = new JButton("Place Bet");
 
+    JRadioButton cardStyleRadioButton = new JRadioButton("Card Style");
+    JRadioButton textStyleRadioButton = new JRadioButton("Text Style");
+
     private BlackjackGame game;
     private Hand playerHand = new Hand("");
     private Hand splitHand;
@@ -58,6 +61,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private boolean betLocked;
     private boolean roundActive;
     private boolean playingSplitHand;
+    private String visualStrategy = "cardView";
 
     private ActionListener hitActionListener;
     private ActionListener standActionListener;
@@ -82,12 +86,34 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLabel, BorderLayout.NORTH);
 
+
         final JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(2, 2, 8, 8));
         infoPanel.add(new JLabel("Current Balance:"));
         infoPanel.add(balanceValueLabel);
         infoPanel.add(new JLabel("Current Bet:"));
         infoPanel.add(betValueLabel);
+
+        final JPanel visualPanel = new JPanel();
+        visualPanel.setLayout(new GridLayout(1, 2, 8, 8));
+        JLabel radioTitleLabel = new JLabel("Visual Style");
+        ButtonGroup styleGroup = new ButtonGroup();
+        styleGroup.add(cardStyleRadioButton);
+        styleGroup.add(textStyleRadioButton);
+        cardStyleRadioButton.setSelected(true);
+        visualPanel.add(radioTitleLabel);
+        visualPanel.add(cardStyleRadioButton);
+        visualPanel.add(textStyleRadioButton);
+        visualPanel.setLayout(new BoxLayout(visualPanel, BoxLayout.Y_AXIS));
+
+        final JPanel topRightPanel = new JPanel();
+        topRightPanel.setLayout(new BoxLayout(topRightPanel, BoxLayout.X_AXIS));
+        topRightPanel.add(infoPanel);
+        topRightPanel.add(visualPanel);
+        visualPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+
+
 
     // Left side panel with bet controls and centered action buttons
         final JPanel leftPanel = new JPanel();
@@ -136,7 +162,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         final JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.add(infoPanel);
+        centerPanel.add(topRightPanel);
         centerPanel.add(Box.createVerticalStrut(12));
         centerPanel.add(handPanel);
         centerPanel.add(Box.createVerticalGlue());
@@ -165,6 +191,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         rulesButton.addActionListener(this);
         quitButton.addActionListener(this);
         placeBetButton.addActionListener(this);
+        cardStyleRadioButton.addActionListener(this);
+        textStyleRadioButton.addActionListener(this);
 
         betSpinner.addChangeListener(new ChangeListener() {
             @Override
@@ -213,6 +241,14 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         }
         else if (source.equals(doubleDownButton)) {
             playerDoubleDowns();
+        }
+        else if (source.equals(cardStyleRadioButton)) {
+            visualStrategy = "cardView";
+            updateHandLabels(hideDealerHoleCard);
+        }
+        else if (source.equals(textStyleRadioButton)) {
+            visualStrategy = "textView";
+            updateHandLabels(hideDealerHoleCard);
         }
     }
 
@@ -443,6 +479,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         standButton.setEnabled(false);
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
+        hideDealerHoleCard = false;
 
         
         // reset bet spinner to 0 after game finishes
@@ -462,9 +499,15 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     }
 
     private void updateHandLabels(boolean hideDealerHoleCard) {
+        if (visualStrategy.equals("cardView")) { updateHandLabelsCardStyle(hideDealerHoleCard); }
+        else if (visualStrategy.equals("textView")) { updateHandLabelsTextStyle(hideDealerHoleCard); }
+    }
+
+    private void updateHandLabelsCardStyle(boolean hideDealerHoleCard) {
         dealerHandPanel.removeAll();
         revalidate();
         dealerHandPanel.add(dealerHandLabel);
+        dealerHandLabel.setText("Dealer: -");
         dealerHandPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         if (game.getDealer().getHand() == null) return;
         Hand hand = game.getDealer().getHand();
@@ -473,6 +516,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         playerHandPanel.removeAll();
         playerHandPanel.add(playerHandLabel);
+        playerHandLabel.setText("Player: -");
+        playerHandPanel.setLayout(new BoxLayout(playerHandPanel, BoxLayout.X_AXIS));
         playerHandPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         if (splitHand != null) {
             JPanel verticalPanel = new JPanel();
@@ -496,7 +541,6 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
 
         }
         else {
-            playerHandPanel.setLayout(new BoxLayout(playerHandPanel, BoxLayout.X_AXIS));
             formatHandImages(playerHandPanel, "player", playerHand, false);
         }
         playerHandPanel.revalidate();
@@ -526,13 +570,15 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
                     BufferedImage img = ImageIO.read(new URL("https://deckofcardsapi.com/static/img/back.png"));
                     Integer newW = 150;
                     Integer newH = img.getHeight()*newW/img.getWidth();
-                    panel.add(new JLabel(new ImageIcon(resize(img, newW, newH))));
+                    JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
+                    panel.add(imageLabel);
                 }
                 else {
                     BufferedImage img = ImageIO.read(new URL(card.getImageUrl()));
                     Integer newW = 150;
                     Integer newH = img.getHeight()*newW/img.getWidth();
-                    panel.add(new JLabel(new ImageIcon(resize(img, newW, newH))));
+                    JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
+                    panel.add(imageLabel);
                 }
             }
             catch (IOException e) {
@@ -542,7 +588,19 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         }
     }
 
-    private void updateHandLabelstxt(boolean hideDealerHoleCard) {
+    private void updateHandLabelsTextStyle(boolean hideDealerHoleCard) {
+        //Clearing the panels in case this is a style change
+        playerHandPanel.removeAll();
+        playerHandPanel.revalidate();
+        playerHandPanel.repaint();
+        playerHandPanel.add(playerHandLabel);
+
+        dealerHandPanel.removeAll();
+        dealerHandPanel.revalidate();
+        dealerHandPanel.repaint();
+        dealerHandPanel.add(dealerHandLabel);
+
+
         dealerHandLabel.setText(formatHandLabel("Dealer", dealerHand, hideDealerHoleCard));
         if (splitHand != null) {
             String playerHandsHtml = "<html>" +
