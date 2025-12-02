@@ -408,6 +408,7 @@ public class PlayerHitInteractorTest {
         assertFalse(presenter.outputData.isSplitHand());
 
         assertEquals("InGame", game.getResult());
+        assertEquals("", game.getSecondResult());
     }
 
     @Test
@@ -446,6 +447,7 @@ public class PlayerHitInteractorTest {
         assertTrue(presenter.outputData.isBust());
         assertTrue(presenter.outputData.isSplitHand());
 
-        assertEquals("PlayerLose", game.getResult());
+        assertEquals("InGame", game.getResult());
+        assertEquals("PlayerLose", game.getSecondResult());
     }
 }
