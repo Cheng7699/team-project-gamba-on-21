@@ -224,7 +224,7 @@ public class AppBuilder {
                 loggedInViewModel, viewManagerModel);
 
         final TopupInputBoundary topupInteractor =
-                new TopupInteractor(userDataAccessObject, topupOutputBoundary, userFactory);
+                new TopupInteractor(userDataAccessObject, topupOutputBoundary);
 
         TopUpController topupController = new TopUpController(topupInteractor);
         topUpView.setTopupController(topupController);
