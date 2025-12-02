@@ -1,11 +1,14 @@
 package app;
 
-import javax.swing.*;
+import javax.swing.JFrame;
 
 public class Main {
     public static void main(String[] args) {
-        AppBuilder appBuilder = new AppBuilder();
-        JFrame application = appBuilder
+        final int applicationWidth = 1280;
+        final int applicationHeight = 720;
+
+        final AppBuilder appBuilder = new AppBuilder();
+        final JFrame application = appBuilder
                 .addLoginView()
                 .addSignupView()
                 .addLaunchView()
@@ -28,7 +31,7 @@ public class Main {
                 .build();
 
         application.pack();
-        application.setSize(1280, 720);
+        application.setSize(applicationWidth, applicationHeight);
         application.setLocationRelativeTo(null);
         application.setVisible(true);
     }
