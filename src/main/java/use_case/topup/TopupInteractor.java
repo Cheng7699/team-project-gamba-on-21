@@ -1,12 +1,10 @@
 package use_case.topup;
 
 import entity.Accounts;
-import entity.AccountFactory;
 
 /**
- * Pre: User is logged into an account, and the username passed in already exists in data
+ * Pre: User is logged into an account, and the username passed in already exists in data.
  */
-
 
 public class TopupInteractor implements TopupInputBoundary {
     private final TopupUserDataAccessInterface topupUserDataAccess;
@@ -21,9 +19,9 @@ public class TopupInteractor implements TopupInputBoundary {
     @Override
     public void execute(TopupInputData topupInputData) {
         try {
-            int topUpAmount = Integer.parseInt(topupInputData.getTopupAmount());
+            final int topUpAmount = Integer.parseInt(topupInputData.getTopupAmount());
 
-            if (topUpAmount <=0){
+            if (topUpAmount <= 0) {
                 userpresenter.prepareFailureView("Amount must be greater than 0");
                 return;
             }
@@ -39,7 +37,7 @@ public class TopupInteractor implements TopupInputBoundary {
 
             userpresenter.prepareSuccessView(topupOutputData);
         }
-        catch(NumberFormatException e) {
+        catch (NumberFormatException e) {
             userpresenter.prepareFailureView("Please enter an integer");
         }
     }
