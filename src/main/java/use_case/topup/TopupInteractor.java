@@ -11,14 +11,11 @@ import entity.AccountFactory;
 public class TopupInteractor implements TopupInputBoundary {
     private final TopupUserDataAccessInterface topupUserDataAccess;
     private final TopupOutputBoundary userpresenter;
-    private final AccountFactory accountFactory;
 
     public TopupInteractor(TopupUserDataAccessInterface topupUserDataAccess,
-                           TopupOutputBoundary topupOutputBoundary,
-                           AccountFactory accountFactory) {
+                           TopupOutputBoundary topupOutputBoundary) {
         this.topupUserDataAccess = topupUserDataAccess;
         this.userpresenter = topupOutputBoundary;
-        this.accountFactory = accountFactory;
     }
 
     @Override
