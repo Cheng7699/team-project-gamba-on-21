@@ -9,8 +9,9 @@ public class PlaceBetInteractor {
     private final PlaceBetUserDataAccessInterface userDataAccessObject;
     private final PlaceBetOutputBoundary presenter;
 
-    public PlaceBetInteractor(PlaceBetUserDataAccessInterface userDataAccessObject,
-                             PlaceBetOutputBoundary presenter) {
+    public PlaceBetInteractor(
+            PlaceBetUserDataAccessInterface userDataAccessObject,
+            PlaceBetOutputBoundary presenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.presenter = presenter;
     }
