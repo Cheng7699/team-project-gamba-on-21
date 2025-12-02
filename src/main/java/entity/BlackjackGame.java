@@ -41,8 +41,8 @@ public class BlackjackGame {
 
     public void toDealerTurn() { state = "DealerTurn"; }
     public void toPlayerTurn() { state = "PlayerTurn"; }
-    public void gameOver() { state = "GameOver"; }
     public void gameStart() { state = "InGame"; }
+    public void gameOver() { state = "GameOver"; }
 
     public void playerWin() {
         this.gameOver();

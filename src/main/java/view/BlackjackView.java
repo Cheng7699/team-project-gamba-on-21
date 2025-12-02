@@ -2,6 +2,8 @@ package view;
 
 import entity.*;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.game_start.GameStartController;
+import interface_adapter.game_start.GameStartPresenter;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 
@@ -30,6 +32,8 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     private final String viewName = VIEW_NAME;
     private final LoggedInViewModel loggedInViewModel;
     private final ViewManagerModel viewManagerModel;
+    private GameStartController gameStartController = null;
+
 
     private final JLabel balanceValueLabel = new JLabel("$0");
     private final JLabel betValueLabel = new JLabel("$0");
@@ -74,9 +78,13 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         this.loggedInViewModel = loggedInViewModel;
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
-        this.game = new BlackjackGame(null,
+        this.game = new BlackjackGame("",
                 new BlackjackDealer(),
                 new BlackjackPlayer(loggedInViewModel.getState().getUsername()));
+
+        this.setGameStartActionListener(e -> {
+            gameStartController.gameStart(game, (Integer) this.getBetSpinner().getValue());
+        });
 
         setLayout(new BorderLayout(12, 12));
         setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -257,8 +265,14 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         if ("state".equals(evt.getPropertyName()) || "balance".equals(evt.getPropertyName())) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             updateBalance(state);
+            setGame(state.getGame());
             // Update button states when balance changes
             if (roundActive) {
+                setGame(state.getGame());
+                updateSplitButtonState();
+                updateDoubleDownButtonState();
+                setGame(state.getGame());
+                setHands(state.getGame().getPlayer().getHands().get(0), state.getGame().getDealer().getHand(), true);
                 updateSplitButtonState();
                 updateDoubleDownButtonState();
             }
@@ -392,7 +406,7 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
         splitButton.setEnabled(false);
         doubleDownButton.setEnabled(false);
 
-        
+
         // reset bet spinner to 0 after game finishes
 
         betValueLabel.setText("$0");
@@ -569,14 +583,14 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
             try {
                 if (owner.equals("dealer") && hideDealerHoleCard && i == 0) {
                     BufferedImage img = ImageIO.read(new URL("https://deckofcardsapi.com/static/img/back.png"));
-                    Integer newW = 150;
+                    Integer newW = 130;
                     Integer newH = img.getHeight()*newW/img.getWidth();
                     JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
                     panel.add(imageLabel);
                 }
                 else {
                     BufferedImage img = ImageIO.read(new URL(card.getImageUrl()));
-                    Integer newW = 150;
+                    Integer newW = 130;
                     Integer newH = img.getHeight()*newW/img.getWidth();
                     JLabel imageLabel = new JLabel(new ImageIcon(resize(img, newW, newH)));
                     panel.add(imageLabel);
@@ -862,6 +876,10 @@ public class BlackjackView extends JPanel implements ActionListener, PropertyCha
     public ActionListener getStandActionListener() {
         return standActionListener;
     }
-    
+
+    public void setGameStartController(GameStartController gameStartController) {
+        this.gameStartController = gameStartController;
+    }
+
     public JSpinner getBetSpinner() { return this.betSpinner; }
 }

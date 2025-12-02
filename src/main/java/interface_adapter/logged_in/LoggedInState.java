@@ -1,5 +1,7 @@
 package interface_adapter.logged_in;
 
+import entity.BlackjackGame;
+
 /**
  * The State information representing the logged-in user.
  */
@@ -13,6 +15,7 @@ public class LoggedInState {
     private int balance;
     private int selfLimit;
     private String statusMessage = "";
+    private BlackjackGame blackjackGame;
 
     public LoggedInState(LoggedInState copy) {
         username = copy.username;
@@ -46,6 +49,7 @@ public class LoggedInState {
 
     public String getGameState() { return gameState; }
 
+    public void setGame(BlackjackGame blackjackGame) { this.blackjackGame = blackjackGame; }
 
     public void setPasswordError(String passwordError) {
         this.passwordError = passwordError;
@@ -78,4 +82,6 @@ public class LoggedInState {
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
     }
+
+    public BlackjackGame getGame() { return this.blackjackGame; }
 }
