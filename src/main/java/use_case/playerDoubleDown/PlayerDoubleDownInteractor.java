@@ -17,8 +17,9 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
     private final PlayerDoubleDownUserDataAccessInterface userDataAccessObject;
     private final PlayerDoubleDownOutputBoundary presenter;
 
-    public PlayerDoubleDownInteractor(PlayerDoubleDownUserDataAccessInterface userDataAccessObject,
-                                     PlayerDoubleDownOutputBoundary presenter) {
+    public PlayerDoubleDownInteractor(
+            PlayerDoubleDownUserDataAccessInterface userDataAccessObject,
+            PlayerDoubleDownOutputBoundary presenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.presenter = presenter;
     }
@@ -52,7 +53,8 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
         }
 
         // process double down: deduct bet, double bet amount, deal card
-        DoubleDownResult result = processDoubleDown(game, account, currentBet, additionalBet, currentHand);
+        DoubleDownResult result = processDoubleDown(
+                game, account, currentBet, additionalBet, currentHand);
         if (!result.isSuccess()) {
             return; // Error already presented
         }
@@ -79,7 +81,8 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
      * @param isInSplittedHand whether this is a split hand
      * @return null if valid, error message if invalid
      */
-    private String validateDoubleDown(BlackjackGame game, Hand currentHand, boolean isInSplittedHand) {
+    private String validateDoubleDown(
+            BlackjackGame game, Hand currentHand, boolean isInSplittedHand) {
         // Check if hand exists
         if (currentHand == null || currentHand.getCards().isEmpty()) {
             return "No hand available to double down.";
@@ -87,10 +90,11 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
 
         // Double down only allowed with exactly 2 cards
         if (currentHand.getCards().size() != 2) {
-            return "Double down is only allowed with exactly 2 cards. You have " + currentHand.getCards().size() + " cards.";
+            int cardCount = currentHand.getCards().size();
+            return "Double down is only allowed with exactly 2 cards. "
+                    + "You have " + cardCount + " cards.";
         }
 
-        // Check if hand is already bust (shouldn't happen with 2 cards, but check anyway)
         if (currentHand.isBust()) {
             return "Cannot double down on a bust hand.";
         }
@@ -155,7 +159,9 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
     private boolean hasSufficientBalance(Accounts account, int additionalBet) {
         int currentBalance = account.getBalance();
         if (currentBalance < additionalBet) {
-            presenter.presentFailView("Insufficient funds to double down. Need $" + additionalBet + " but only have $" + currentBalance + ".");
+            String errorMessage = "Insufficient funds to double down. Need $"
+                    + additionalBet + " but only have $" + currentBalance + ".";
+            presenter.presentFailView(errorMessage);
             return false;
         }
         return true;
@@ -199,8 +205,9 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
      * @param currentHand the current hand to add card to
      * @return result containing the updated hand and new bet amount, or failure result
      */
-    private DoubleDownResult processDoubleDown(BlackjackGame game, Accounts account, 
-                                               int currentBet, int additionalBet, Hand currentHand) {
+    private DoubleDownResult processDoubleDown(
+            BlackjackGame game, Accounts account,
+            int currentBet, int additionalBet, Hand currentHand) {
         // Deduct the additional bet from balance
         account.subtractFunds(additionalBet);
         userDataAccessObject.save(account);
@@ -223,14 +230,16 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
     }
 
     /**
-     * Rolls back a failed double down operation by refunding the bet and restoring the original bet amount.
+     * Rolls back a failed double down operation by refunding the bet
+     * and restoring the original bet amount.
      * Follows Single Responsibility Principle by handling rollback logic separately.
      * @param account the player's account
      * @param additionalBet the additional bet to refund
      * @param game the blackjack game
      * @param originalBet the original bet amount to restore
      */
-    private void rollbackDoubleDown(Accounts account, int additionalBet, BlackjackGame game, int originalBet) {
+    private void rollbackDoubleDown(
+            Accounts account, int additionalBet, BlackjackGame game, int originalBet) {
         account.addFunds(additionalBet);
         userDataAccessObject.save(account);
         game.setBetAmount(originalBet);
@@ -243,9 +252,11 @@ public class PlayerDoubleDownInteractor implements PlayerDoubleDownInputBoundary
      * @param isBust whether the hand is bust
      * @param isInSplittedHand whether this is a split hand
      */
-    private void updateGameResultIfBust(BlackjackGame game, boolean isBust, boolean isInSplittedHand) {
+    private void updateGameResultIfBust(
+            BlackjackGame game, boolean isBust, boolean isInSplittedHand) {
         if (isBust) {
-            // If bust and game is not split, or if split hand busts, set game result to player loses
+            // If bust and game is not split, or if split hand busts,
+            // set game result to player loses
             if (!game.isSplitted() || isInSplittedHand) {
                 game.playerLose();
             }
