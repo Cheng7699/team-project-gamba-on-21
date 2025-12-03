@@ -12,7 +12,7 @@ public class PayoutInteractor {
     private final PayoutOutputBoundary presenter;
 
     public PayoutInteractor(PayoutUserDataAccessInterface userDataAccessObject,
-                           PayoutOutputBoundary presenter) {
+                            PayoutOutputBoundary presenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.presenter = presenter;
     }
@@ -26,46 +26,32 @@ public class PayoutInteractor {
             return;
         }
 
-        // Get the bet amount from game (this will be doubled if player doubled down)
         int betAmount = (int) game.getBetAmount();
         String result = game.getResult();
         int payoutAmount = 0;
         int currentBalance = account.getBalance();
 
-        // check if player has blackjack (21 with exactly 2 cards)
-        // Note: After double down, player has 3 cards, so even if total is 21, it's NOT blackjack
-        boolean playerHasBlackjack = isBlackjack(game);
+        // check if dealer has blackjack (21 with exactly 2 cards)
         boolean dealerHasBlackjack = isDealerBlackjack(game);
 
         int newBalance;
         if (result.equals("PlayerWin")) {
-            if (playerHasBlackjack && !dealerHasBlackjack) {
-                // blackjack pays 3:2 (only possible with initial 2 cards, not after double down)
-                // for every $2 bet, you win $3
-                // example: bet $100 -> win $150, total return $250 (bet $100 + winnings $150)
-                // bet was already deducted, so add back bet (stake) + 1.5x bet winnings
-                // Using integer division to ensure correct 3:2 payout
-                // For $100 bet: $100 * 3 / 2 = $150 winnings
+            boolean firstHandHasBlackjack = isBlackjack(game, 0);
+            if (firstHandHasBlackjack && !dealerHasBlackjack) {
                 payoutAmount = (betAmount * 3) / 2;
                 newBalance = currentBalance + betAmount + payoutAmount;
             } else {
-                // regular win pays 1:1 (includes wins after double down)
-                // bet was already deducted (original bet + additional bet for double down = final bet)
-                // For 1:1 payout: return stake + winnings equal to stake
-                // Total to add: 2 * betAmount (stake return + winnings)
+
                 payoutAmount = betAmount;
                 newBalance = currentBalance + betAmount + betAmount;
             }
         } else if (result.equals("PlayerLose")) {
-            // loss: bet was already deducted (original + additional for double down = final bet)
-            // no change to balance (bet stays deducted)
             payoutAmount = -betAmount;
-            newBalance = currentBalance; // Balance already has bet deducted, no change needed
+            newBalance = currentBalance;
         } else if (result.equals("Push")) {
-            // push: return bet (bet was deducted, so add it back)
-            // for double down, this returns the final bet amount
+
             payoutAmount = 0;
-            newBalance = currentBalance + betAmount; // Return stake only
+            newBalance = currentBalance + betAmount;
         } else {
             // game still in progress or unknown result
             payoutAmount = 0;
@@ -75,34 +61,24 @@ public class PayoutInteractor {
         if (game.isSplitted()) {
             String secondResult = game.getSecondResult();
             if (secondResult.equals("PlayerWin")) {
-                if (playerHasBlackjack && !dealerHasBlackjack) {
-                    // blackjack pays 3:2
-                    // for every $2 bet, you win $3
-                    // example: bet $100 -> win $150, total return $250 (bet $100 + winnings $150)
-                    // bet was already deducted, so add back bet + 1.5x bet winnings
-                    // Using integer division to ensure correct 3:2 payout
-                    // For $100 bet: $100 * 3 / 2 = $150 winnings
+                boolean secondHandHasBlackjack = isBlackjack(game, 1);
+                if (secondHandHasBlackjack && !dealerHasBlackjack) {
                     payoutAmount += (betAmount * 3) / 2;
                     newBalance += betAmount + (betAmount * 3) / 2;
                 } else {
-                    // regular win pays 1:1 (bet was already deducted, so add back bet + bet)
                     payoutAmount += betAmount;
                     newBalance += betAmount + betAmount;
                 }
             } else if (secondResult.equals("PlayerLose")) {
-                // loss: bet was already deducted when placed, so no change
                 payoutAmount -= betAmount;
-                // newBalance stays the same (bet already deducted)
+                newBalance -= betAmount;
             } else if (secondResult.equals("Push")) {
-                // push: return bet (bet was deducted, so add it back)
                 payoutAmount += 0;
                 newBalance += betAmount;
             } else {
-                // game still in progress or unknown result
                 payoutAmount += 0;
             }
         }
-        // update account balance
         account.setBalance(newBalance);
         userDataAccessObject.save(account);
 
@@ -111,20 +87,30 @@ public class PayoutInteractor {
     }
 
     /**
-     * Checks if player has blackjack (21 with exactly 2 cards).
+     * Checks if a specific player hand has blackjack (21 with exactly 2 cards).
      * Note: After double down, player has 3 cards, so even if total is 21, it's not blackjack.
      * @param game the blackjack game
-     * @return true if player has blackjack (21 with exactly 2 cards)
+     * @param handIndex the index of the hand to check (0 for first hand, 1 for split hand)
+     * @return true if the specified hand has blackjack (21 with exactly 2 cards)
      */
-    private boolean isBlackjack(BlackjackGame game) {
-        Hand playerHand = game.getPlayer().getHands().get(0);
-        // Blackjack is only 21 with exactly 2 cards (not after double down or hit)
+    private boolean isBlackjack(BlackjackGame game, int handIndex) {
+        if (game.getPlayer().getHands().size() <= handIndex) {
+            return false;
+        }
+        Hand playerHand = game.getPlayer().getHands().get(handIndex);
         return playerHand.getHandTotalNumber() == 21 && playerHand.getCards().size() == 2;
     }
 
-    // check if dealer has blackjack (21 with exactly 2 cards)
+    /**
+     * Checks if dealer has blackjack (21 with exactly 2 cards).
+     * @param game the blackjack game
+     * @return true if dealer has blackjack (21 with exactly 2 cards)
+     */
     private boolean isDealerBlackjack(BlackjackGame game) {
         Hand dealerHand = game.getDealer().getHand();
+        if (dealerHand == null) {
+            return false;
+        }
         return dealerHand.getHandTotalNumber() == 21 && dealerHand.getCards().size() == 2;
     }
 }
