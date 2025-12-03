@@ -12,6 +12,10 @@ public class ReadRulePresenter implements ReadRuleOutputBoundary {
         this.view = view;
     }
 
+    public RulesView getView() {
+        return view;
+    }
+
     @Override
     public void present(ReadRuleOutputData outputData) {
         view.setRuleName(outputData.getText());

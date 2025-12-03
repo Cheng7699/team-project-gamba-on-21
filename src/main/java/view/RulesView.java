@@ -101,5 +101,9 @@ public class RulesView extends JPanel implements ActionListener{
     public String getViewName(){
         return VIEW_NAME;
     }
+
+    public JTextField getRuleName() {
+        return ruleName;
+    }
 }
 
